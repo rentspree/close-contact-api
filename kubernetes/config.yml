@@ -1,0 +1,110 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rentspree-boilerplate-service
+  namespace: service
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: rentspree-boilerplate-service
+        transport: seneca
+        config_map: "true"
+    spec:
+      containers:
+        - name: rentspree-boilerplate-service
+          image: { { IMAGE } }
+          resources:
+            limits:
+              cpu: 100m
+              memory: 200Mi
+            requests:
+              cpu: 5m
+              memory: 50Mi
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: MONGO_DB
+              value: "rentspree-boilerplate-mongo.database"
+          envFrom:
+            - configMapRef:
+                name: rentspree-boilerplate-config
+            - configMapRef:
+                name: service-discovery-config
+          ports:
+            - containerPort: 8000
+  selector:
+    matchLabels:
+      app: rentspree-boilerplate-service
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: rentspree-boilerplate-mongo
+  namespace: database
+spec:
+  serviceName: boilerplate-db
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: rentspree-boilerplate-mongo
+        type: mongo
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: mongo
+          image: mongo:3.4
+          resources:
+            requests:
+              memory: "50Mi"
+              cpu: "1m"
+            limits:
+              memory: "100Mi"
+              cpu: "50m"
+          ports:
+            - containerPort: 27017
+          volumeMounts:
+            - name: rentspree-boilerplate-db
+              mountPath: /data/db
+      volumes:
+        - name: rentspree-boilerplate-db
+          persistentVolumeClaim:
+            claimName: rentspree-boilerplate-db
+  selector:
+    matchLabels:
+      app: rentspree-boilerplate-mongo
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rentspree-boilerplate-mongo
+  namespace: database
+  labels:
+    name: rentspree-boilerplate-mongo
+spec:
+  ports:
+    - port: 27017
+      targetPort: 27017
+  type: NodePort
+  selector:
+    app: rentspree-boilerplate-mongo
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rentspree-boilerplate-service
+  namespace: service
+  labels:
+    name: rentspree-boilerplate-service
+spec:
+  clusterIP: None
+  ports:
+    - port: 8000
+      targetPort: 8000
+  selector:
+    app: rentspree-boilerplate-service

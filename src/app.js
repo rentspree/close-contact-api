@@ -4,10 +4,13 @@ const createError = require("http-errors")
 const express = require("express")
 const path = require("path")
 const cookieParser = require("cookie-parser")
+const graphqlHTTP = require("express-graphql")
 const logger = require("morgan")
+// import { ApolloServer } from 'apollo-server-express';
 
 const indexRouter = require("./routes")
 const usersRouter = require("./routes/users")
+const schema = require("./models/user")
 
 const app = express()
 
@@ -23,6 +26,13 @@ app.use(express.static(path.join(__dirname, "public")))
 
 app.use("/", indexRouter)
 app.use("/users", usersRouter)
+
+app.use(
+  "/graphql",
+  graphqlHTTP({
+    schema,
+  }),
+)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

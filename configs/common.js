@@ -9,4 +9,5 @@ module.exports = {
       useUnifiedTopology: true,
     },
   },
+  "@graphiql:IS_DEV": "true",
 }

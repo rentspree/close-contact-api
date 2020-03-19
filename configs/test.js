@@ -1,5 +1,5 @@
 module.exports = {
   mongodb: {
-    database: "rsp-boilerplate-test",
+    database: "close-contact-test",
   },
 }

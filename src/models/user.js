@@ -2,7 +2,7 @@ import { Schema, model } from "mongoose"
 import { composeWithMongoose } from "graphql-compose-mongoose"
 import { schemaComposer } from "graphql-compose"
 
-export const UserSchema = new Schema({
+const UserSchema = new Schema({
   name: {
     type: String,
     index: true,
@@ -13,7 +13,7 @@ export const UserSchema = new Schema({
   },
 })
 
-export const User = model("User", UserSchema)
+const User = model("User", UserSchema)
 const UserTC = composeWithMongoose(User, {})
 
 schemaComposer.Query.addFields({
@@ -38,5 +38,4 @@ schemaComposer.Mutation.addFields({
 })
 
 const graphqlSchema = schemaComposer.buildSchema()
-// console.log(graphqlSchema)
 export default graphqlSchema

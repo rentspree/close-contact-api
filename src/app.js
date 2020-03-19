@@ -1,4 +1,5 @@
 import "source-map-support/register"
+import schema from "./models/user"
 
 const createError = require("http-errors")
 const express = require("express")
@@ -6,11 +7,8 @@ const path = require("path")
 const cookieParser = require("cookie-parser")
 const graphqlHTTP = require("express-graphql")
 const logger = require("morgan")
-// import { ApolloServer } from 'apollo-server-express';
-
 const indexRouter = require("./routes")
 const usersRouter = require("./routes/users")
-const schema = require("./models/user")
 
 const app = express()
 
@@ -31,6 +29,7 @@ app.use(
   "/graphql",
   graphqlHTTP({
     schema,
+    graphiql: true,
   }),
 )
 

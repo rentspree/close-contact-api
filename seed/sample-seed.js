@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { User } from "../src/models/User"
+import { User } from "../src/models/user"
 
 async function seedSample() {
   // seed sample

@@ -9,6 +9,7 @@ function getFakeUserData() {
     firstName: faker.name.firstName(),
     lastName: faker.name.lastName(),
     facebookId: `fb_${faker.random.uuid()}`,
+    profilePicture: faker.image.avatar(),
   }
 }
 

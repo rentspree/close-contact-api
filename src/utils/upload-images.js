@@ -5,7 +5,6 @@ import fs from "fs"
 import mkdirp from "mkdirp"
 import config from "../config"
 import * as gCloudStorage from "./gcloud-storage"
-
 /**
  * This method will upload image to gcloud and return url of the image
  * @param {User} userID the id of user
@@ -31,11 +30,9 @@ export async function uploadImage(
     metadata: { contentType: mimeType },
     public: true,
   }
-  const data = await gCloudStorage.upload(filePath, options, resizeImage)
-  if (data && data.name && data.bucket) {
-    return `https://storage.googleapis.com/${data.bucket}/${data.name}`
-  }
-  return null
+
+  await gCloudStorage.bucket.upload(filePath, options)
+  return `https://storage.googleapis.com/${config.gCloudStorage.bucket}/${destination}`
 }
 
 export function downloadProfilePicture(imageUrl, userID, mimeType) {

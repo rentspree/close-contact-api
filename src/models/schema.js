@@ -13,11 +13,12 @@ schemaComposer.Query.addFields({
 })
 
 schemaComposer.Query.addFields({
-  user: UserTC.getResolver("findByFacebookId"),
+  user: UserTC.getResolver("findMany"),
 })
 
 schemaComposer.Mutation.addFields({
-  createUser: UserTC.getResolver("createOne"),
+  userCreate: UserTC.getResolver("createOne"),
+  userUpdate: UserTC.getResolver("updateOne"),
 })
 
 // console.log(UserTC.schemaComposer.Query.setField)

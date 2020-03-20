@@ -1,15 +1,13 @@
 /* eslint-disable no-unused-vars */
 import { schemaComposer } from "graphql-compose"
-import { CloseContactTC } from "./close-contact-tc"
 import { NotificationTC } from "./notification-tc"
 import { UserTC } from "./user-tc"
+import { CloseContactTC } from "./close-contact-tc"
 
 schemaComposer.Query.addFields({
   me: {
     type: UserTC.getTypeName(),
-    resolve: (source, args, context, info) => {
-      return context.user
-    },
+    resolve: (_source, _args, context) => context.user,
   },
   users: UserTC.getResolver("findMany"),
   user: UserTC.getResolver("findOne"),

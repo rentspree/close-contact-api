@@ -5,9 +5,12 @@ const PointSchema = new Schema({
   type: {
     type: String,
     enum: ["Point"],
+    default: "Point",
+    required: true,
   },
   coordinates: {
     type: [Number],
+    required: true,
   },
 })
 
@@ -30,10 +33,7 @@ const CloseContactSchema = new Schema(
     protection: { type: String },
   },
   {
-    timestamps: {
-      createdAt: "createdAt",
-      updatedAt: "updatedAt",
-    },
+    timestamps: true,
     toObject: {
       virtuals: true,
     },

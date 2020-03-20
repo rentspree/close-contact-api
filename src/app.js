@@ -1,5 +1,6 @@
 import "source-map-support/register"
 import rootSchema from "./graphql/schema"
+import { authorize } from "./middlewares/authorize-user"
 
 const createError = require("http-errors")
 const express = require("express")
@@ -8,6 +9,7 @@ const cookieParser = require("cookie-parser")
 const graphqlHTTP = require("express-graphql")
 const logger = require("morgan")
 const indexRouter = require("./routes")
+const usersRouter = require("./routes/users")
 
 const app = express()
 
@@ -22,15 +24,11 @@ app.use(cookieParser())
 app.use(express.static(path.join(__dirname, "public")))
 
 app.use("/", indexRouter)
-// app.use("/users", usersRouter)
+app.use("/account", usersRouter)
 
 app.use(
   "/graphql",
-  (req, res, next) => {
-    // checkToken
-    req.user = { _id: "mockId" }
-    next()
-  },
+  authorize(),
   graphqlHTTP({
     schema: rootSchema,
     graphiql: true,

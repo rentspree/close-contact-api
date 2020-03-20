@@ -1,12 +1,30 @@
 /* eslint-disable no-unused-vars */
 import { Types } from "mongoose"
 import { composeWithMongoose } from "graphql-compose-mongoose"
+import { schemaComposer } from "graphql-compose"
 import { CloseContact } from "../models/close-contact"
 import { User } from "../models/user"
 import { makeInput, makeOutput } from "./helper"
 
 const { ObjectId } = Types
 export const CloseContactTC = composeWithMongoose(CloseContact)
+
+const contactTypeEnumTC = schemaComposer.createEnumTC({
+  name: "ContactType",
+  values: {
+    CONTACT: { value: 0 },
+    CONTACTEE: { value: 1 },
+  },
+})
+
+CloseContactTC.addFields({
+  type: {
+    type: contactTypeEnumTC,
+    resolve: (source, args, context) =>
+      source.contact.toString() === context.user._id.toString() ? 0 : 1,
+  },
+})
+
 const CloseContactCreateIC = makeInput(CloseContactTC, ["contact"]) // user scan as contactee
 const CloseContactUpdateIC = makeInput(CloseContactTC, ["contact", "contactee"]) // user scan as contactee
 const CloseContactOutputIC = makeOutput(CloseContactTC, [
@@ -41,11 +59,17 @@ export const makeContactResolver = CloseContactTC.getResolver("createOne")
 
 export const findContactResolver = CloseContactTC.getResolver("findMany")
   .wrapResolve(next => async ({ args, context, ...rest }) => {
+    const { filter = {}, ...restArgs } = args
+    const { type, ...restFilter } = filter
     const newArgs = {
-      ...args,
+      ...restArgs,
       filter: {
-        ...args.filter,
-        $or: [{ contactee: context.user._id }, { contact: context.user._id }], // must be in current user context
+        ...restFilter,
+        ...(type === undefined && {
+          $or: [{ contactee: context.user._id }, { contact: context.user._id }],
+        }), // must be in current user context
+        ...(type === 0 && { contact: context.user._id }),
+        ...(type === 1 && { contactee: context.user._id }),
       },
     }
     const res = await next({
@@ -56,7 +80,10 @@ export const findContactResolver = CloseContactTC.getResolver("findMany")
     return res
   })
   .wrap(newResolver => {
-    newResolver.getArgITC("filter").removeField(["_id"])
+    newResolver
+      .getArgITC("filter")
+      .removeField(["_id", "contact", "contactee"])
+      .addFields({ type: { type: contactTypeEnumTC } })
     return newResolver
   })
 

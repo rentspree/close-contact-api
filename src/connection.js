@@ -4,7 +4,7 @@ import config from "./config"
 import logger from "./utils/logger"
 
 const { host, database, port, options } = config.mongodb
-sleep(4000)
+// sleep(4000)
 
 const db = mongoose.createConnection(
   `mongodb://${host}:${port}/${database}`,

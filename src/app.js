@@ -29,7 +29,9 @@ app.use(
   "/graphql",
   graphqlHTTP({
     schema: rootSchema,
-    // rootValue: ,will get passed as the root value to the executor
+    // rootValue: {
+    //   user:
+    // },//will get passed as the root value to the executor
     graphiql: true,
   }),
 )

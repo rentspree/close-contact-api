@@ -1,5 +1,4 @@
-import { Schema } from "mongoose"
-import connection from "../connection"
+import mongoose, { Schema } from "mongoose"
 
 const PointSchema = new Schema({
   type: {
@@ -21,7 +20,7 @@ const CloseContactSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "User",
     },
-    timestamps: { type: Date },
+    timestamps: { type: Date, default: Date.now },
     location: {
       type: PointSchema,
     },
@@ -44,4 +43,4 @@ const CloseContactSchema = new Schema(
   },
 )
 
-export const CloseContact = connection.model("CloseContact", CloseContactSchema)
+export const CloseContact = mongoose.model("CloseContact", CloseContactSchema)

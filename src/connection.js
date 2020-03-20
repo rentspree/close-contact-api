@@ -6,12 +6,14 @@ import logger from "./utils/logger"
 const { host, database, port, options } = config.mongodb
 // sleep(4000)
 
-const db = mongoose.createConnection(
-  `mongodb://${host}:${port}/${database}`,
-  options,
-)
+mongoose
+  .connect(`mongodb://${host}:${port}/${database}`, options)
+  .then(() => logger.info("MongoDB connection success ..."))
+  .catch(err => logger.error("MongoDB connection error ...", err))
 
 mongoose.Promise = require("bluebird")
+
+const db = mongoose.connection
 
 db.on("error", e => {
   logger.error("MongoDB connection error ...", e)

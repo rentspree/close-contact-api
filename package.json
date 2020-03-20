@@ -15,7 +15,8 @@
     "start": "cross-env NODE_ENV=development nodemon --watch src --exec babel-node -- src/bin/www",
     "start:prod": "cross-env NODE_ENV=production node build/bin/www",
     "seed": "cross-env NODE_ENV=production babel-node seed/sample-seed.js",
-    "seed:dev": "babel-node seed/sample-seed.js"
+    "seed:dev": "babel-node seed/seeder.js",
+    "drop-db": "babel-node seed/drop-db.js"
   },
   "author": "",
   "license": "ISC",
@@ -41,6 +42,7 @@
     "http-errors": "^1.7.3",
     "joi": "^14.3.1",
     "lodash": "^4.17.15",
+    "moment": "^2.24.0",
     "mongodb": "^3.4.0",
     "mongodb-migrate": "^2.0.2",
     "mongoose": "^5.8.1",

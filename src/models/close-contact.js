@@ -47,9 +47,7 @@ const CloseContactSchema = new Schema(
 
 export const CloseContact = mongoose.model("CloseContact", CloseContactSchema)
 
-export const CloseContactTC = composeWithMongoose(CloseContact, {
-  name: "CloseContact",
-})
+export const CloseContactTC = composeWithMongoose(CloseContact)
 
 CloseContactTC.addResolver({
   name: "findByContactee",

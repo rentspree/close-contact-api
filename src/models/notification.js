@@ -16,4 +16,4 @@ const NotificationSchema = new Schema(
   },
 )
 
-export const Notification = mongoose.model("CloseContact", NotificationSchema)
+export const Notification = mongoose.model("Notification", NotificationSchema)

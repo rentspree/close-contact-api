@@ -32,13 +32,13 @@ export const UserTC = composeWithMongoose(User, {})
 
 UserTC.addRelation("closeContacts", {
   resolver: () => CloseContactTC.getResolver("findByContactee"),
-  // prepareArgs: {
-  //   contacteeId: source => {
-  //     console.log(source)
-  //     return source.Id
-  //   },
-  // },
-  // projection: { userId: true },
+  prepareArgs: {
+    contacteeId: source => {
+      console.log("sourceJa", source)
+      return source._id
+    },
+  },
+  // projection: { _id: true },
 })
 
 // const schemaComposer = new SchemaComposer()
@@ -63,3 +63,17 @@ UserTC.addRelation("closeContacts", {
 //   userRemoveOne: UserTC.getResolver("removeOne"),
 //   userRemoveMany: UserTC.getResolver("removeMany"),
 // })
+
+// ex
+/**
+ * TweetTC.addResolver({
+  kind: 'mutation',
+  name: 'createTweetWithRels',
+  type: TweetTC.getResolver('createOne').getType(),
+  args: TweetTC.getResolver('createOne').getArgs(),
+  resolve: (rp) => {
+     ...custom logic
+     return $shapeOfOutputType;
+  },
+});
+ */

@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: covid-spree-service
-          image: { { IMAGE } }
+          image: {{IMAGE}}
           resources:
             limits:
               cpu: 500m

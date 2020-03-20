@@ -2,6 +2,7 @@ import fs from "fs"
 import path from "path"
 import { Schema } from "mongoose"
 import merge from "lodash/merge"
+import pick from "lodash/pick"
 import randomstring from "randomstring"
 import jwt from "jsonwebtoken"
 import config from "../config"
@@ -175,18 +176,19 @@ UserSchema.methods.saveToken = function() {
     this._id,
   )
 }
-const allowList = ["name", "profilePicture", ""]
 
 UserSchema.method.editProfile = async updateObj => {
-  // const
-  // facebookId: String,
-  // email: String,
-  // name: String,
-  // status: String,
-  // hasAcceptedTerm: { type: Date, default: Date.now },
-  // profilePicture: String,
-  // firstName: String,
-  // lastName: String
+  const allowUpdated = pick(updateObj, [
+    "name",
+    "profilePicture",
+    "firstName",
+    "lastName",
+  ])
+  Object.entries(allowUpdated).reduce((p, [k, v]) => {
+    p[k] = v
+    return p
+  }, this)
+  await this.save()
 }
 
 export const User = mongoose.model("User", UserSchema)

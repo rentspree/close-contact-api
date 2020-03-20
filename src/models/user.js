@@ -5,6 +5,7 @@ const UserSchema = new Schema(
   {
     facebookId: String,
     email: String,
+    name: String,
     status: String,
     hasAcceptedTerm: { type: Date, default: Date.now },
   },

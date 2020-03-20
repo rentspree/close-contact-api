@@ -1,6 +1,7 @@
 import faker from "faker"
 import { User } from "../src/models/user"
-const userCount = parseInt(process.argv.slice(2)[0]) || 5
+
+const userCount = parseInt(process.argv.slice(2)[0], 10) || 5
 
 function getFakeUserData() {
   return {

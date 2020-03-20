@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { schemaComposer } from "graphql-compose"
-import { NotificationTC } from "./notification-tc"
+import { NotificationTC, findNotificationResolver } from "./notification-tc"
 import { UserTC, updateProfileResolver } from "./user-tc"
 import {
   CloseContactTC,
@@ -16,21 +16,21 @@ schemaComposer.Query.addFields({
   },
   contacts: findContactResolver,
   contactPersons: CloseContactTC.getResolver("contactPersons"),
+  notifications: findNotificationResolver,
 })
 
 schemaComposer.Mutation.addFields({
   profile: updateProfileResolver,
   contact: updateContactResolver,
   makeContact: makeContactResolver,
-  // scanContact
+  // markInfect // send noti to all user related
+  // markCure // send noti to all user related
 })
 /**
  *   notifications [Notification] {
    //filter
   }
   
-  markInfect() // send noti to all user related
-  markCure() // send noti to all user related
  */
 export default UserTC.schemaComposer.buildSchema()
 

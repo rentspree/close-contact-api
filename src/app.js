@@ -1,6 +1,5 @@
 import "source-map-support/register"
-import "./connection"
-import schema from "./models/user"
+import rootSchema from "./models/schema"
 
 const createError = require("http-errors")
 const express = require("express")
@@ -29,7 +28,10 @@ app.use("/users", usersRouter)
 app.use(
   "/graphql",
   graphqlHTTP({
-    schema,
+    schema: rootSchema,
+    // rootValue: {
+    //   user:
+    // },//will get passed as the root value to the executor
     graphiql: true,
   }),
 )

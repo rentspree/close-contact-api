@@ -45,5 +45,4 @@ const CloseContactSchema = new Schema(
     id: false,
   },
 )
-
 export const CloseContact = mongoose.model("CloseContact", CloseContactSchema)

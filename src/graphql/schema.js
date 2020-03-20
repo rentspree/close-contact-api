@@ -3,6 +3,17 @@ import { CloseContactTC } from "./close-contact-tc"
 import { NotificationTC } from "./notification-tc"
 import { UserTC } from "./user-tc"
 
+async function authMiddleware(resolve, source, args, context, info) {
+  if (context.user) {
+    return resolve(source, args, context, info)
+  }
+  throw new Error("You must be authorized")
+}
+
+schemaComposer.Query.addFields({
+  me: UserTC.getResolver("findOne", [authMiddleware]),
+})
+
 schemaComposer.Query.addFields({
   users: UserTC.getResolver("findMany"),
   user: UserTC.getResolver("findOne"),

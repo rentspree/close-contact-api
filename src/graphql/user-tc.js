@@ -1,8 +1,24 @@
+/* eslint-disable no-unused-vars */
 import { composeWithMongoose } from "graphql-compose-mongoose"
 import { CloseContactTC } from "./close-contact-tc"
 import { User } from "../models/user"
 
 export const UserTC = composeWithMongoose(User, {})
+
+UserTC.addResolver({
+  name: "findUser",
+  type: "User",
+  resolve: async ({ source, context, info }) => {
+    // console.log(context)
+    // const contacteeIds = await CloseContact.find({
+    //   contact: ObjectId(source._id),
+    // }).distinct("contactee")
+    // const contactee = await User.find({
+    //   _id: { $in: contacteeIds },
+    // })
+    // return contactee
+  },
+})
 
 UserTC.addFields({
   contactTo: CloseContactTC.getResolver("contactTo"),

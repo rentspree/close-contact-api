@@ -8,7 +8,6 @@ const cookieParser = require("cookie-parser")
 const graphqlHTTP = require("express-graphql")
 const logger = require("morgan")
 const indexRouter = require("./routes")
-const usersRouter = require("./routes/users")
 
 const app = express()
 
@@ -23,15 +22,17 @@ app.use(cookieParser())
 app.use(express.static(path.join(__dirname, "public")))
 
 app.use("/", indexRouter)
-app.use("/users", usersRouter)
+// app.use("/users", usersRouter)
 
 app.use(
   "/graphql",
+  (req, res, next) => {
+    // checkToken
+    req.user = { _id: "mockId" }
+    next()
+  },
   graphqlHTTP({
     schema: rootSchema,
-    // rootValue: {
-    //   user:
-    // },//will get passed as the root value to the executor
     graphiql: true,
   }),
 )

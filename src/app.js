@@ -1,4 +1,5 @@
 import "source-map-support/register"
+import "./connection"
 import schema from "./models/user"
 
 const createError = require("http-errors")

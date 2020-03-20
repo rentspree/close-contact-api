@@ -1,19 +1,22 @@
-import { Schema, model } from "mongoose"
+import mongoose from "mongoose"
+
 import { composeWithMongoose } from "graphql-compose-mongoose"
 import { schemaComposer } from "graphql-compose"
 
-const UserSchema = new Schema({
-  name: {
-    type: String,
-    index: true,
+const UserSchema = new mongoose.Schema(
+  {
+    facebookId: String,
+    email: String,
+    name: String,
+    status: String,
+    hasAcceptedTerm: { type: Date, default: Date.now },
   },
-  age: {
-    type: Number,
-    index: true,
+  {
+    timestamps: true,
   },
-})
+)
 
-export const User = model("User", UserSchema)
+export const User = mongoose.model("User", UserSchema)
 const UserTC = composeWithMongoose(User, {})
 
 schemaComposer.Query.addFields({

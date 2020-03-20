@@ -1,9 +1,5 @@
-/* eslint-disable no-unused-vars */
-import { Schema, Types } from "mongoose"
-import { composeWithMongoose } from "graphql-compose-mongoose"
+import { Schema } from "mongoose"
 import mongoose from "../connection"
-
-const { ObjectId } = Types
 
 const PointSchema = new Schema({
   type: {
@@ -49,52 +45,3 @@ const CloseContactSchema = new Schema(
 )
 
 export const CloseContact = mongoose.model("CloseContact", CloseContactSchema)
-
-export const CloseContactTC = composeWithMongoose(CloseContact)
-
-CloseContactTC.addFields({
-  contacteeUser: {
-    type: "User", // array of Posts
-    resolve: async (source, args, req) => {
-      const cc = await CloseContact.findOne({
-        _id: ObjectId(source._id),
-      })
-        .populate("contactee")
-        .exec()
-      return cc.contactee
-    },
-  },
-  contactUser: {
-    type: "User", // array of Posts
-    resolve: async (source, args, req) => {
-      const cc = await CloseContact.findOne({
-        _id: ObjectId(source._id),
-      })
-        .populate("contact")
-        .exec()
-      return cc.contact
-    },
-  },
-})
-
-CloseContactTC.addResolver({
-  name: "contactTo",
-  type: "[User]",
-  resolve: async ({ source, args, context, info }) => {
-    const cc = await CloseContact.find({
-      contact: ObjectId(source._id),
-    }).populate("contactee")
-    return cc.map(c => c.contactee)
-  },
-})
-
-CloseContactTC.addResolver({
-  name: "contactFrom",
-  type: "[User]",
-  resolve: async ({ source, args, context, info }) => {
-    const cc = await CloseContact.find({
-      contactee: ObjectId(source._id),
-    }).populate("contact")
-    return cc.map(c => c.contact)
-  },
-})

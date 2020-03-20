@@ -1,7 +1,7 @@
 import { schemaComposer } from "graphql-compose"
-import { CloseContactTC } from "./close-contact"
+import { CloseContactTC } from "./close-contact-graph"
 import { NotificationTC } from "./notification"
-import { UserTC } from "./user"
+import { UserTC } from "./user-graph"
 // Requests which read data put into Query
 
 // schemaComposer.Query.addFields({

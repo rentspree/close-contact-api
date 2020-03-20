@@ -3,14 +3,19 @@ import { composeWithMongoose } from "graphql-compose-mongoose"
 
 const NotificationSchema = new Schema(
   {
-    user: {
+    notifier: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+    actor: {
       type: Schema.Types.ObjectId,
       ref: "User",
     },
     timestamps: { type: Date, default: Date.now },
     title: String,
-    subject: String,
-    note: String,
+    description: String,
+    type: String,
+    read: { type: Date },
   },
   {
     timestamps: true,

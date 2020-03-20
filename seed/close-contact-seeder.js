@@ -1,9 +1,6 @@
 import moment from "moment"
 import { CloseContact } from "../src/models/close-contact"
-
-function randomBetween(number) {
-  return Math.floor(Math.random() * number)
-}
+import { randomBetween } from "./util-seeder"
 
 function getRnd(min, max) {
   return (Math.random() * (max - min) + min).toFixed(6)

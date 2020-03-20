@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: rentspree-boilerplate-service
+  name: covid-spree-service
   namespace: service
 spec:
   replicas: 1
   template:
     metadata:
       labels:
-        app: rentspree-boilerplate-service
+        app: covid-spree-service
         transport: seneca
         config_map: "true"
     spec:
       containers:
-        - name: rentspree-boilerplate-service
+        - name: covid-spree-service
           image: { { IMAGE } }
           resources:
             limits:
@@ -26,31 +26,36 @@ spec:
             - name: NODE_ENV
               value: "production"
             - name: MONGO_DB
-              value: "rentspree-boilerplate-mongo.database"
+              value: "covid-spree-mongo.database"
           envFrom:
             - configMapRef:
-                name: rentspree-boilerplate-config
-            - configMapRef:
-                name: service-discovery-config
+                name: covid-spree-config
           ports:
             - containerPort: 8000
+          volumeMounts:
+            - name: jwt-auth-secret
+              readOnly: true
+              mountPath: "/root/app/certs"
+            - name: gcloud-key-secret
+              readOnly: true
+              mountPath: "/root/app/private-key"
   selector:
     matchLabels:
-      app: rentspree-boilerplate-service
+      app: covid-spree-service
 
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: rentspree-boilerplate-mongo
+  name: covid-spree-mongo
   namespace: database
 spec:
-  serviceName: boilerplate-db
+  serviceName: covid-spree-db
   replicas: 1
   template:
     metadata:
       labels:
-        app: rentspree-boilerplate-mongo
+        app: covid-spree-mongo
         type: mongo
     spec:
       terminationGracePeriodSeconds: 10
@@ -67,44 +72,44 @@ spec:
           ports:
             - containerPort: 27017
           volumeMounts:
-            - name: rentspree-boilerplate-db
+            - name: covid-spree-db
               mountPath: /data/db
       volumes:
-        - name: rentspree-boilerplate-db
+        - name: covid-spree-db
           persistentVolumeClaim:
-            claimName: rentspree-boilerplate-db
+            claimName: covid-spree-db
   selector:
     matchLabels:
-      app: rentspree-boilerplate-mongo
+      app: covid-spree-mongo
 
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: rentspree-boilerplate-mongo
+  name: covid-spree-mongo
   namespace: database
   labels:
-    name: rentspree-boilerplate-mongo
+    name: covid-spree-mongo
 spec:
   ports:
     - port: 27017
       targetPort: 27017
   type: NodePort
   selector:
-    app: rentspree-boilerplate-mongo
+    app: covid-spree-mongo
 
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: rentspree-boilerplate-service
+  name: covid-spree-service
   namespace: service
   labels:
-    name: rentspree-boilerplate-service
+    name: covid-spree-service
 spec:
   clusterIP: None
   ports:
     - port: 8000
       targetPort: 8000
   selector:
-    app: rentspree-boilerplate-service
+    app: covid-spree-service

@@ -11,3 +11,7 @@ include:
 #  - project: 'rentspree/utility/ci-template'
 #    file: '/test-service.yaml'
 #    ref: 'latest'
+
+deploy_sandbox:
+  only:
+  - staging

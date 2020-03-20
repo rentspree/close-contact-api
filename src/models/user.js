@@ -17,6 +17,9 @@ const UserSchema = new mongoose.Schema(
     email: String,
     status: String,
     hasAcceptedTerm: Date,
+    profilePicture: String,
+    firstName: String,
+    lastName: String,
   },
   {
     timestamps: true,
@@ -69,7 +72,7 @@ UserSchema.statics.findOrCreate = async function(
   const user = await this.findOne(findCondition)
   if (!user) {
     const newUser = new this({ ...parseProfile(profile) })
-    if (profile.facebookUser) {
+    if (profile.isFacebookUser) {
       try {
         if (!profile.picture.data.is_silhouette) {
           const filePath = await downloadProfilePicture(
@@ -77,10 +80,10 @@ UserSchema.statics.findOrCreate = async function(
             newUser._id,
             "image/jpeg",
           )
-          newUser.image = await uploadImage(
+          newUser.profilePicture = await uploadImage(
             newUser._id,
-            "/profile-image",
-            true,
+            "profile-image",
+            false,
             "image/jpeg",
             filePath,
           )
@@ -105,10 +108,12 @@ UserSchema.statics.findOrCreate = async function(
 UserSchema.statics.parseFacebookProfileToUserProfile = (profile = {}) => ({
   facebookId: profile.id,
   email: profile.email,
-  image: profile.image,
+  profilePicture: profile.image,
+  firstName: profile.first_name,
+  lastName: profile.last_name,
 })
 
-UserSchema.methods.issueUserAccessToken = async done => {
+UserSchema.methods.issueUserAccessToken = async function(done) {
   const token = await this.saveToken()
   await this.save()
   return done(null, token.accessToken, token.refreshToken)

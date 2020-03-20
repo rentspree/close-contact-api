@@ -11,7 +11,7 @@ async function authMiddleware(resolve, source, args, context, info) {
 }
 
 schemaComposer.Query.addFields({
-  me: UserTC.getResolver("findOne", [authMiddleware]),
+  me: UserTC.getResolver("me", [authMiddleware]),
 })
 
 schemaComposer.Query.addFields({

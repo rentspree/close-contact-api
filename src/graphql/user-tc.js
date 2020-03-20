@@ -6,17 +6,10 @@ import { User } from "../models/user"
 export const UserTC = composeWithMongoose(User, {})
 
 UserTC.addResolver({
-  name: "findUser",
+  name: "me",
   type: "User",
-  resolve: async ({ source, context, info }) => {
-    // console.log(context)
-    // const contacteeIds = await CloseContact.find({
-    //   contact: ObjectId(source._id),
-    // }).distinct("contactee")
-    // const contactee = await User.find({
-    //   _id: { $in: contacteeIds },
-    // })
-    // return contactee
+  resolve: ({ source, context, info }) => {
+    return context.user
   },
 })
 

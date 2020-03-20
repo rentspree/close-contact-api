@@ -34,10 +34,7 @@ const CloseContactSchema = new Schema(
     protection: { type: String },
   },
   {
-    timestamps: {
-      createdAt: "createdAt",
-      updatedAt: "updatedAt",
-    },
+    timestamps: true,
     toObject: {
       virtuals: true,
     },

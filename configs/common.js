@@ -1,3 +1,5 @@
+const path = require("path")
+
 module.exports = {
   "@logLevel": "debug",
   mongodb: {
@@ -15,4 +17,9 @@ module.exports = {
   refreshToken: {
     "@expiresIn:REFRESH_TOKEN_EXPIRES_MS": 2600000000,
   },
+  gCloudStorage: {
+    "@bucket:GCLOUD_BUCKET_NAME": "covid-19-spree",
+  },
+  imagePath: process.env.IMAGE_PATH || path.resolve(__dirname, "../image_tmp"),
+  "@fbAppSecret:FB_APP_SECRET": "372eadb5d30767f287c1746ad55a4748",
 }

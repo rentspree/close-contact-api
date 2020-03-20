@@ -83,7 +83,7 @@ UserSchema.statics.findOrCreate = async function(
           newUser.profilePicture = await uploadImage(
             newUser._id,
             "profile-image",
-            false,
+            true,
             "image/jpeg",
             filePath,
           )

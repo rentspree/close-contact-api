@@ -3,12 +3,14 @@ import path from "path"
 import gm from "gm"
 
 const config = require("nfs-config-resolver")()
-const Storage = require("@google-cloud/storage")
+const { Storage } = require("@google-cloud/storage")
 
 const credentials = JSON.parse(
   fs.readFileSync(path.resolve(__dirname, "../../private-key/gcloud-key.json")),
 )
-const storage = Storage({ credentials })
+const storage = new Storage({
+  credentials,
+})
 const configGCloud = config.gCloudStorage
 const bucket = storage.bucket(configGCloud.bucket)
 

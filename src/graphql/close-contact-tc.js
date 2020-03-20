@@ -1,13 +1,15 @@
 /* eslint-disable no-unused-vars */
 import { Types } from "mongoose"
 import { composeWithMongoose } from "graphql-compose-mongoose"
+import get from "lodash/get"
 import { schemaComposer } from "graphql-compose"
 import { CloseContact } from "../models/close-contact"
 import { User } from "../models/user"
-import { makeInput, makeOutput } from "./helper"
+import { makeInput } from "./helper"
 
 const { ObjectId } = Types
 export const CloseContactTC = composeWithMongoose(CloseContact)
+// CloseContactTC.removeField(["contact", "contactee"])
 
 const contactTypeEnumTC = schemaComposer.createEnumTC({
   name: "ContactType",
@@ -20,26 +22,27 @@ const contactTypeEnumTC = schemaComposer.createEnumTC({
 CloseContactTC.addFields({
   type: {
     type: contactTypeEnumTC,
-    resolve: (source, args, context) =>
-      source.contact.toString() === context.user._id.toString() ? 0 : 1,
+    resolve: (source, args, context) => {
+      return get(source, "contact", "").toString() ===
+        get(context, "user._id", "").toString()
+        ? 0
+        : 1
+    },
+    projection: { contact: true },
   },
 })
 
-const CloseContactCreateIC = makeInput(CloseContactTC, ["contact"]) // user scan as contactee
+// const CloseContactCreateIC = makeInput(CloseContactTC, ["contact"]) // user scan as contactee
 const CloseContactUpdateIC = makeInput(CloseContactTC, ["contact", "contactee"]) // user scan as contactee
-const CloseContactOutputIC = makeOutput(CloseContactTC, [
-  "contact",
-  "contactee",
-])
 
 export const makeContactResolver = CloseContactTC.getResolver("createOne")
   .wrapResolve(next => async ({ args, context, ...rest }) => {
-    const { contact: contactee, ...restArgs } = args
+    const { contact: target, type, ...restArgs } = args
     const newArgs = {
       record: {
         ...restArgs,
-        contactee,
-        contact: context.user._id, // must be in current user context
+        contactee: type ? context.user._id : target,
+        contact: type ? target : context.user._id,
       },
     }
     const res = await next({
@@ -52,9 +55,9 @@ export const makeContactResolver = CloseContactTC.getResolver("createOne")
   .wrap(newResolver => newResolver, {
     args: {
       contact: "MongoID!",
-      ...CloseContactCreateIC.getFields(),
+      type: "ContactType!",
+      ...CloseContactUpdateIC.getFields(),
     },
-    type: CloseContactTC,
   })
 
 export const findContactResolver = CloseContactTC.getResolver("findMany")
@@ -111,60 +114,25 @@ export const updateContactResolver = CloseContactTC.getResolver("updateOne")
     },
     type: CloseContactTC,
   })
-// CloseContactTC.addFields({
-//   contacteeUser: {
-//     type: "User",
-//     resolve: async (source, args, req) => {
-//       const cc = await CloseContact.findOne({
-//         _id: ObjectId(source._id),
-//       })
-//         .populate("contactee")
-//         .exec()
-//       return cc.contactee
-//     },
-//   },
-//   contactUser: {
-//     type: "User",
-//     resolve: async (source, args, req) => {
-//       const cc = await CloseContact.findOne({
-//         _id: ObjectId(source._id),
-//       })
-//         .populate("contact")
-//         .exec()
-//       return cc.contact
-//     },
-//   },
-// })
 
-// CloseContactTC.addResolver({
-//   name: "contactTo",
-//   type: "[User]",
-//   resolve: async ({ source, args, context, info }) => {
-//     const contacteeIds = await CloseContact.find({
-//       contact: ObjectId(source._id),
-//     }).distinct("contactee")
-//     const contactee = await User.find({
-//       _id: { $in: contacteeIds },
-//     })
+CloseContactTC.addFields({
+  user: {
+    type: "User",
+    resolve: async (source, _args, context) => {
+      const { contact, contactee } = source
+      const { user } = context
+      const contactUser = await User.findOne({
+        _id:
+          contact.toString() === get(user, "_id").toString()
+            ? contactee
+            : contact,
+      })
 
-//     return contactee
-//   },
-// })
-
-// CloseContactTC.addResolver({
-//   name: "contactFrom",
-//   type: "[User]",
-//   resolve: async ({ source, args, context, info }) => {
-//     const contactIds = await CloseContact.find({
-//       contact: ObjectId(source._id),
-//     }).distinct("contact")
-//     const contacts = await User.find({
-//       _id: { $in: contactIds },
-//     })
-
-//     return contacts
-//   },
-// })
+      return contactUser
+    },
+    projection: { contact: true, contactee: true },
+  },
+})
 
 // // distinct
 // CloseContactTC.addResolver({

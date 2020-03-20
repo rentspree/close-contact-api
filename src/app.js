@@ -1,5 +1,5 @@
 import "source-map-support/register"
-import rootSchema from "./models/schema"
+import rootSchema from "./graphql/schema"
 
 const createError = require("http-errors")
 const express = require("express")

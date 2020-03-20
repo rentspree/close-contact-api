@@ -1,4 +1,5 @@
 import mongoose, { Schema } from "mongoose"
+import moment from "moment"
 
 const PointSchema = new Schema({
   type: {
@@ -42,4 +43,30 @@ const CloseContactSchema = new Schema(
     id: false,
   },
 )
+
+/**
+ * This method will find the user who contacted with the patient in 14 days
+ * and send push notification to the potential infected user
+ */
+CloseContactSchema.statics.notifyCloseContact = async function(patientId) {
+  const incubationPeriod = moment().subtract(14, "days")
+  const potentialInfection = await this.find({
+    timestamps: {
+      $gte: incubationPeriod,
+    },
+    $or: [
+      {
+        contacteeId: patientId,
+      },
+      {
+        contactId: patientId,
+      },
+    ],
+  })
+
+  // TODO: send notification to potentialInfection contacts
+  // TODO: remove the return when working on send notification
+  return potentialInfection
+}
+
 export const CloseContact = mongoose.model("CloseContact", CloseContactSchema)

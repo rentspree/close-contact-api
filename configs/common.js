@@ -3,7 +3,7 @@ module.exports = {
   mongodb: {
     "@host:MONGO_DB": "localhost",
     port: 27017,
-    database: "rsp-boilerplate",
+    database: "close-contact",
     options: {
       useNewUrlParser: true,
       useUnifiedTopology: true,

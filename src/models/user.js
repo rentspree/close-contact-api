@@ -1,5 +1,15 @@
+import fs from "fs"
+import path from "path"
 import mongoose from "mongoose"
+import merge from "lodash/merge"
+import randomstring from "randomstring"
+import jwt from "jsonwebtoken"
+
+import config from "../config"
+import { Token } from "./token"
 import connection from "../connection"
+import { setMillisecondToDate } from "../utils/convert-date"
+import { uploadImage, downloadProfilePicture } from "../utils/upload-images"
 
 const UserSchema = new mongoose.Schema(
   {
@@ -13,10 +23,14 @@ const UserSchema = new mongoose.Schema(
   },
 )
 
+export const cert = fs.readFileSync(
+  path.resolve(__dirname, "../../certs", "private.key"),
+)
+
 /**
  * A User object
  * @typedef {Object} User
- * @property {MongooseID} id - The id of the user document in the mongo collection
+ * @property {MongooseID} _id - The id of the user document in the mongo collection
  * @property {String} facebookId - The facebook id of the user
  * @property {String} email - The user email
  * @property {String} status - The state of the user
@@ -39,6 +53,7 @@ const UserSchema = new mongoose.Schema(
  *
  * @param {Object} findCondition the condition use to find the user from database
  * @param {Profile} profile the profile object
+ * @param {Function} parseProfile the profile parse that will use to parse profile data object to user data object
  * @returns {User} model of this saved instance
  *
  * @example
@@ -46,16 +61,39 @@ const UserSchema = new mongoose.Schema(
  * User.findOrCreate({ email: "test@test.com" }, { id: "12345678", first_name: "Jon", last_name: "Snow" })
  *
  */
-// UserSchema.statics.findOrCreate = async function(
-//   findCondition,
-//   profile,
-//   parseProfile,
-// ) {
-//   const user = await this.findOne(findCondition)
-//   if (!user) {
-//   }
-//   return user
-// }
+UserSchema.statics.findOrCreate = async function(
+  findCondition,
+  profile,
+  parseProfile,
+) {
+  const user = await this.findOne(findCondition)
+  if (!user) {
+    const newUser = new this({ ...parseProfile(profile) })
+    if (profile.facebookUser) {
+      try {
+        if (!profile.picture.data.is_silhouette) {
+          const filePath = await downloadProfilePicture(
+            profile.picture.data.url,
+            newUser._id,
+            "image/jpeg",
+          )
+          newUser.image = await uploadImage(
+            newUser._id,
+            "/profile-image",
+            true,
+            "image/jpeg",
+            filePath,
+          )
+          await newUser.save()
+        }
+      } catch (e) {
+        console.error("Error facebook picture=", e) // eslint-disable-line
+      }
+    }
+    return newUser.save()
+  }
+  return user
+}
 
 /**
  * This method is used to convert facebook profile object to user profile object
@@ -70,30 +108,67 @@ UserSchema.statics.parseFacebookProfileToUserProfile = (profile = {}) => ({
   image: profile.image,
 })
 
+UserSchema.methods.issueUserAccessToken = async done => {
+  const token = await this.saveToken()
+  await this.save()
+  return done(null, token.accessToken, token.refreshToken)
+}
+
 /**
- * This method is used to find the existing user on the system
- * If there is no user that match the condition in the system it will create and return a brand new user instead
- *
- * @param {Object} findCondition the condition use to find the user from database
- * @param {Profile} profile the profile object
- * @returns {User} model of this saved instance
- *
- * @example
- *
- * User.findOrCreate({ email: "test@test.com" }, { id: "12345678", first_name: "Jon", last_name: "Snow" })
- *
+ * generate access token by JWT
+ * @param {Object} option additional option for generate access token
+ * @returns {Object} that Object, accessToken and accessTokenExpiresAt
  */
-UserSchema.statics.facebook = async function(profile = {}) {
-  const user = await this.findOne({ facebookId: profile.id })
-  if (!user) {
-    const userByEmail = await this.findOne({ email: profile.email })
-    if (userByEmail) return userByEmail
-    const newUser = await this.model("User").save(
-      this.parseFacebookProfileToUserProfile(profile),
-    )
-    return newUser
+UserSchema.methods.generateToken = function(option = {}) {
+  const opt = {
+    algorithm: "RS256",
+    expiresIn: config.accessToken.expiresIn,
   }
-  return user
+  merge(option, opt)
+  const accessTokenExpiresAt = setMillisecondToDate(opt.expiresIn)
+  const accessToken = jwt.sign(
+    {
+      _id: this._id,
+    },
+    cert,
+    option,
+  )
+  return {
+    accessToken,
+    accessTokenExpiresAt,
+  }
+}
+
+/**
+ * generate refresh token by random string
+ * @returns {Object} that Object, refreshToken and refreshTokenExpiresAt
+ * @memberof User
+ * @instance
+ */
+UserSchema.methods.generateRefreshToken = function() {
+  return {
+    refreshToken: randomstring.generate(),
+    refreshTokenExpiresAt: setMillisecondToDate(config.refreshToken.expiresIn),
+  }
+}
+
+/**
+ * save token
+ * generate access token
+ * generate refresh token
+ * save to mongo
+ * @returns {Token} model token
+ * @memberof User
+ * @instance
+ */
+UserSchema.methods.saveToken = function() {
+  const accessToken = this.generateToken()
+  const refreshToken = this.generateRefreshToken()
+  return Token.saveAccessTokenAndRefreshToken(
+    accessToken,
+    refreshToken,
+    this._id,
+  )
 }
 
 export const User = connection.model("User", UserSchema)

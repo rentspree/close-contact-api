@@ -7,6 +7,10 @@ false
 ### Google Cloud Secret ###
 private-key/gcloud-key.json
 
+### Auth Private key and public key ###
+certs/private.key
+certs/public.pem
+
 ### Code ###
 # Visual Studio Code - https://code.visualstudio.com/
 .settings/

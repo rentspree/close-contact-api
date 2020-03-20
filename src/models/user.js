@@ -1,12 +1,12 @@
-import mongoose from "mongoose"
+import { Schema } from "mongoose"
 import connection from "../connection"
 
-const UserSchema = new mongoose.Schema(
+const UserSchema = new Schema(
   {
     facebookId: String,
     email: String,
     status: String,
-    hasAcceptedTerm: Date,
+    hasAcceptedTerm: { type: Date, default: Date.now },
   },
   {
     timestamps: true,

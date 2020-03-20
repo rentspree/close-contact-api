@@ -1,7 +1,7 @@
 import { Schema } from "mongoose"
 import connection from "../connection"
 
-const pointSchema = new Schema({
+const PointSchema = new Schema({
   type: {
     type: String,
     enum: ["Point"],
@@ -11,7 +11,7 @@ const pointSchema = new Schema({
   },
 })
 
-const closeContactSchema = new Schema(
+const CloseContactSchema = new Schema(
   {
     contactId: {
       type: Schema.Types.ObjectId,
@@ -23,7 +23,7 @@ const closeContactSchema = new Schema(
     },
     timestamps: { type: Date },
     location: {
-      type: pointSchema,
+      type: PointSchema,
     },
     note: { type: String },
     purpose: { type: String },
@@ -44,4 +44,4 @@ const closeContactSchema = new Schema(
   },
 )
 
-export const CloseContact = connection.model("CloseContact", closeContactSchema)
+export const CloseContact = connection.model("CloseContact", CloseContactSchema)

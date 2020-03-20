@@ -15,6 +15,7 @@ schemaComposer.Query.addFields({
     resolve: (_source, _args, context) => context.user,
   },
   contacts: findContactResolver,
+  contactPersons: CloseContactTC.getResolver("contactPersons"),
 })
 
 schemaComposer.Mutation.addFields({

@@ -134,29 +134,46 @@ CloseContactTC.addFields({
   },
 })
 
-// // distinct
-// CloseContactTC.addResolver({
-//   name: "contactAll",
-//   type: "[User]",
-//   resolve: async ({ source, args, context, info }) => {
-//     const closeContacts = await CloseContact.find({
-//       $or: [
-//         { contactee: ObjectId(source._id) },
-//         { contact: ObjectId(source._id) },
-//       ],
-//     })
-//       .select("contactee contact")
-//       .exec()
+// distinct
+// TODO: pagination
+CloseContactTC.addResolver({
+  name: "contactPersons",
+  type: "[User]",
+  args: {
+    since: "Date",
+    until: "Date",
+  },
+  description:
+    "find all distinct close contact persons in the given period of time",
+  resolve: async ({ _source, args = {}, context, info }) => {
+    const { since, until } = args
+    const closeContacts = await CloseContact.find({
+      ...((since || until) && {
+        timestamp: {
+          ...(since && { $gte: since }),
+          ...(until && { $lt: until }),
+        },
+      }),
+      $or: [
+        { contactee: ObjectId(context.user._id) },
+        { contact: ObjectId(context.user._id) },
+      ],
+    })
+      .select("contactee contact")
+      .exec()
 
-//     const others = closeContacts
-//       .map(({ contact, contactee }) =>
-//         contact === source.id ? contactee : contact,
-//       )
-//       .filter((value, index, self) => self.indexOf(value) === index)
+    const others = closeContacts
+      .map(({ contact, contactee }) =>
+        contact === context.user.id ? contactee : contact,
+      )
+      .filter((value, index, self) => self.indexOf(value) === index)
 
-//     const contacts = await User.find({
-//       _id: { $in: others },
-//     })
-//     return contacts
-//   },
-// })
+    const contacts = await User.find({
+      _id: { $in: others },
+    })
+    return contacts
+  },
+  projection: {
+    _id: true,
+  },
+})

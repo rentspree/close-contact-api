@@ -175,5 +175,18 @@ UserSchema.methods.saveToken = function() {
     this._id,
   )
 }
+const allowList = ["name", "profilePicture", ""]
+
+UserSchema.method.editProfile = async updateObj => {
+  // const
+  // facebookId: String,
+  // email: String,
+  // name: String,
+  // status: String,
+  // hasAcceptedTerm: { type: Date, default: Date.now },
+  // profilePicture: String,
+  // firstName: String,
+  // lastName: String
+}
 
 export const User = mongoose.model("User", UserSchema)

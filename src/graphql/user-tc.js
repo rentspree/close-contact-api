@@ -5,20 +5,21 @@ import { User } from "../models/user"
 
 export const UserTC = composeWithMongoose(User, {})
 
+UserTC.addFields({
+  contacts: CloseContactTC.getResolver("contactAll"),
+  contactsTo: CloseContactTC.getResolver("contactTo"),
+  contactsFrom: CloseContactTC.getResolver("contactFrom"),
+})
+
 UserTC.addResolver({
-  name: "me",
+  name: "edit",
+  kind: "mutation",
   type: "User",
-  resolve: ({ source, context, info }) => {
-    return context.user
+  resolve: async ({ source, args, context }) => {
+    const { user, ...data } = args
+    const userInDb = await User.find({ _id: user._id })
   },
 })
-
-UserTC.addFields({
-  contactTo: CloseContactTC.getResolver("contactTo"),
-  contactFrom: CloseContactTC.getResolver("contactFrom"),
-  contactAll: CloseContactTC.getResolver("contactAll"),
-})
-
 // ex
 /**
  * TweetTC.addResolver({

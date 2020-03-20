@@ -62,6 +62,7 @@ CloseContactTC.addResolver({
   },
 })
 
+// distinct
 CloseContactTC.addResolver({
   name: "contactAll",
   type: "[User]",

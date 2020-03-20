@@ -1,4 +1,6 @@
-import mongoose, { Schema } from "mongoose"
+import { Schema } from "mongoose"
+import { composeWithMongoose } from "graphql-compose-mongoose"
+import mongoose from "../connection"
 
 const PointSchema = new Schema({
   type: {
@@ -15,11 +17,11 @@ const PointSchema = new Schema({
 
 const CloseContactSchema = new Schema(
   {
-    contactId: {
+    contact: {
       type: Schema.Types.ObjectId,
       ref: "User",
     },
-    contacteeId: {
+    contactee: {
       type: Schema.Types.ObjectId,
       ref: "User",
     },
@@ -45,4 +47,21 @@ const CloseContactSchema = new Schema(
     id: false,
   },
 )
+
 export const CloseContact = mongoose.model("CloseContact", CloseContactSchema)
+
+export const CloseContactTC = composeWithMongoose(CloseContact, {
+  name: "CloseContact",
+})
+
+CloseContactTC.addResolver({
+  name: "findByContactee",
+  args: { contacteeId: "String!" },
+  type: "[User]",
+  resolve: async ({ args: { contacteeId } }) => {
+    const closeContacts = await CloseContact.findMany({ contacteeId })
+      .populate("contactId")
+      .exec()
+    return closeContacts.map(a => a.contactId)
+  },
+})

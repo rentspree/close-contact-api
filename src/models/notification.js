@@ -1,8 +1,9 @@
 import mongoose, { Schema } from "mongoose"
+import { composeWithMongoose } from "graphql-compose-mongoose"
 
 const NotificationSchema = new Schema(
   {
-    userId: {
+    user: {
       type: Schema.Types.ObjectId,
       ref: "User",
     },
@@ -16,4 +17,6 @@ const NotificationSchema = new Schema(
   },
 )
 
-export const Notification = mongoose.model("CloseContact", NotificationSchema)
+export const Notification = mongoose.model("Notification", NotificationSchema)
+
+export const NotificationTC = composeWithMongoose(Notification, {})

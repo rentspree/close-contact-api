@@ -1,13 +1,13 @@
 import { Schema } from "mongoose"
-import mongoose from "../connection"
 import { composeWithMongoose } from "graphql-compose-mongoose"
+import mongoose from "../connection"
 
 const UserSchema = new Schema(
   {
     facebookId: String,
     email: String,
     status: String,
-    hasAcceptedTerm: Date,
+    hasAcceptedTerm: { type: Date, default: Date.now },
   },
   {
     timestamps: true,

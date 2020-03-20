@@ -24,7 +24,8 @@ export const UserTC = composeWithMongoose(User, {})
 // 3) count together
 
 UserTC.addFields({
-  closeContacts: CloseContactTC.getResolver("findMany"),
+  contactTo: CloseContactTC.getResolver("contactTo"),
+  contactFrom: CloseContactTC.getResolver("contactFrom"),
 })
 
 // const schemaComposer = new SchemaComposer()

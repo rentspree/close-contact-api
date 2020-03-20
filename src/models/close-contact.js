@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { Schema, Types } from "mongoose"
 import { composeWithMongoose } from "graphql-compose-mongoose"
 import mongoose from "../connection"
@@ -73,5 +74,27 @@ CloseContactTC.addFields({
         .exec()
       return cc.contact
     },
+  },
+})
+
+CloseContactTC.addResolver({
+  name: "contactTo",
+  type: "[User]",
+  resolve: async ({ source, args, context, info }) => {
+    const cc = await CloseContact.find({
+      contact: ObjectId(source._id),
+    }).populate("contactee")
+    return cc.map(c => c.contactee)
+  },
+})
+
+CloseContactTC.addResolver({
+  name: "contactFrom",
+  type: "[User]",
+  resolve: async ({ source, args, context, info }) => {
+    const cc = await CloseContact.find({
+      contactee: ObjectId(source._id),
+    }).populate("contact")
+    return cc.map(c => c.contact)
   },
 })

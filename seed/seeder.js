@@ -2,6 +2,7 @@
 import moment from "moment"
 import userSeeder from "./user-seeder"
 import closeContactSeeder from "./close-contact-seeder"
+import "../src/connection"
 import dropDB from "./drop-db"
 
 function randomBetween(number) {

@@ -29,10 +29,13 @@ app.use("/account", usersRouter)
 app.use(
   "/graphql",
   authorize(),
-  graphqlHTTP({
+  graphqlHTTP(req => ({
     schema: rootSchema,
     graphiql: true,
-  }),
+    context: {
+      user: req.user,
+    },
+  })),
 )
 
 // catch 404 and forward to error handler

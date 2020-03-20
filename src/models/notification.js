@@ -1,5 +1,4 @@
-import { Schema } from "mongoose"
-import connection from "../connection"
+import mongoose, { Schema } from "mongoose"
 
 const NotificationSchema = new Schema(
   {
@@ -17,4 +16,4 @@ const NotificationSchema = new Schema(
   },
 )
 
-export const Notification = connection.model("CloseContact", NotificationSchema)
+export const Notification = mongoose.model("CloseContact", NotificationSchema)

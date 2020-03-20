@@ -1,9 +1,9 @@
-import mongoose from "mongoose"
+import mongoose, { Schema } from "mongoose"
 
 import { composeWithMongoose } from "graphql-compose-mongoose"
 import { schemaComposer } from "graphql-compose"
 
-const UserSchema = new mongoose.Schema(
+const UserSchema = new Schema(
   {
     facebookId: String,
     email: String,

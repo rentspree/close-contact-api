@@ -1,22 +1,25 @@
 import fs from "fs"
 import path from "path"
-import mongoose from "mongoose"
+import { Schema } from "mongoose"
 import merge from "lodash/merge"
 import randomstring from "randomstring"
 import jwt from "jsonwebtoken"
+import { composeWithMongoose } from "graphql-compose-mongoose"
+import { schemaComposer } from "graphql-compose"
 
 import config from "../config"
 import { Token } from "./token"
-import connection from "../connection"
+import mongoose from "../connection"
 import { setMillisecondToDate } from "../utils/convert-date"
 import { uploadImage, downloadProfilePicture } from "../utils/upload-images"
 
-const UserSchema = new mongoose.Schema(
+const UserSchema = new Schema(
   {
     facebookId: String,
     email: String,
+    name: String,
     status: String,
-    hasAcceptedTerm: Date,
+    hasAcceptedTerm: { type: Date, default: Date.now },
     profilePicture: String,
     firstName: String,
     lastName: String,
@@ -176,4 +179,39 @@ UserSchema.methods.saveToken = function() {
   )
 }
 
-export const User = connection.model("User", UserSchema)
+export const User = mongoose.model("User", UserSchema)
+
+export const UserTC = composeWithMongoose(User, {})
+UserTC.addResolver({
+  name: "findByFacebookId",
+  args: { facebookId: "String!" },
+  type: "User",
+  resolve: async ({ args: { facebookId } }) => {
+    const user = await User.findOne({ facebookId })
+    return user
+  },
+})
+// const schemaComposer = new SchemaComposer()
+
+// schemaComposer.Query.addFields({
+//   userById: UserTC.getResolver("findById"),
+//   userByIds: UserTC.getResolver("findByIds"),
+//   userOne: UserTC.getResolver("findOne"),
+//   userMany: UserTC.getResolver("findMany"),
+//   userCount: UserTC.getResolver("count"),
+//   userConnection: UserTC.getResolver("connection"),
+//   userPagination: UserTC.getResolver("pagination"),
+// })
+
+// schemaComposer.Mutation.addFields({
+//   userCreateOne: UserTC.getResolver("createOne"),
+//   userCreateMany: UserTC.getResolver("createMany"),
+//   userUpdateById: UserTC.getResolver("updateById"),
+//   userUpdateOne: UserTC.getResolver("updateOne"),
+//   userUpdateMany: UserTC.getResolver("updateMany"),
+//   userRemoveById: UserTC.getResolver("removeById"),
+//   userRemoveOne: UserTC.getResolver("removeOne"),
+//   userRemoveMany: UserTC.getResolver("removeMany"),
+// })
+
+export const UserSchemaComposer = schemaComposer

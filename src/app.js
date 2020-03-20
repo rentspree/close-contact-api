@@ -1,11 +1,12 @@
 import "source-map-support/register"
+import rootSchema from "./models/schema"
 
 const createError = require("http-errors")
 const express = require("express")
 const path = require("path")
 const cookieParser = require("cookie-parser")
+const graphqlHTTP = require("express-graphql")
 const logger = require("morgan")
-
 const indexRouter = require("./routes")
 const usersRouter = require("./routes/users")
 
@@ -23,6 +24,17 @@ app.use(express.static(path.join(__dirname, "public")))
 
 app.use("/", indexRouter)
 app.use("/users", usersRouter)
+
+app.use(
+  "/graphql",
+  graphqlHTTP({
+    schema: rootSchema,
+    // rootValue: {
+    //   user:
+    // },//will get passed as the root value to the executor
+    graphiql: true,
+  }),
+)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

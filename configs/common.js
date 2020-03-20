@@ -22,4 +22,5 @@ module.exports = {
   },
   imagePath: process.env.IMAGE_PATH || path.resolve(__dirname, "../image_tmp"),
   "@fbAppSecret:FB_APP_SECRET": "372eadb5d30767f287c1746ad55a4748",
+  "@graphiql:IS_DEV": "true",
 }

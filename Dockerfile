@@ -1,27 +1,29 @@
-FROM node:12.14.0-alpine
+FROM node:12.14.0-alpine as alpine-deps
+# Install Imagemagick
+RUN apk add --no-cache file build-base python
+RUN apk --update add imagemagick graphicsmagick
 
-RUN mkdir -p /app
+FROM alpine-deps as npm-i
 WORKDIR /app
-ADD package.json /app/package.json
-ADD package-lock.json /app/package-lock.json
-ADD .babelrc /app/.babelrc
-ADD .eslintrc.js /app/.eslintrc.js
-ADD .eslintignore /app/.eslintignore
-ADD .prettierrc /app/.prettierrc
-ADD configs /app/configs
-ADD migrations /app/migrations
-ADD seed /app/seed
-ADD src /app/src
-ADD test /app/test
-ADD migration.config.js /app/migration.config.js
+COPY package.json package.json
+COPY package-lock.json package-lock.json
+RUN npm install --silent --no-audit --no-fund
 
-# SETUP Gemfury
-ARG GEMFURY_DEPLOY_KEY
-RUN echo "//npm-proxy.fury.io/rentspree/:_authToken=$GEMFURY_DEPLOY_KEY" > ~/.npmrc
-RUN npm config set @rentspree:registry https://npm-proxy.fury.io/rentspree/
 
-RUN npm install --no-cache git
+FROM alpine-deps as build-app
+WORKDIR /app
+COPY --from=npm-i /app .
+COPY . .
 RUN npm run build
+
+FROM alpine-deps
+WORKDIR /app
+COPY --from=build-app /app .
+ADD .babelrc .babelrc
+ADD .eslintrc.js .eslintrc.js
+ADD .eslintignore .eslintignore
+ADD .prettierrc .prettierrc
+ADD migration.config.js migration.config.js
 
 EXPOSE 3000
 CMD ["npm", "run", "start:prod"]

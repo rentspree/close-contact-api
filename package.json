@@ -26,9 +26,6 @@
   "homepage": "https://gitlab.com/rentspree/rentspree-backend-boilerplate#README",
   "dependencies": {
     "@babel/runtime": "^7.7.6",
-    "@rentspree/helper": "^1.0.32",
-    "@rentspree/logger": "^1.0.0",
-    "apollo-server-express": "^2.11.0",
     "bluebird": "^3.7.2",
     "cookie-parser": "^1.4.5",
     "debug": "^4.1.1",
@@ -51,7 +48,8 @@
     "nfs-config-resolver": "^2.0.4",
     "source-map-support": "^0.5.16",
     "system-sleep": "^1.3.6",
-    "validator": "^12.1.0"
+    "validator": "^12.1.0",
+    "winston": "^3.2.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.7.5",

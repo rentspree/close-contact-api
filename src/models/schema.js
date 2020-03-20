@@ -1,7 +1,7 @@
 import { schemaComposer } from "graphql-compose"
-import { CloseContactTC } from "./close-contact-graph"
-import { NotificationTC } from "./notification"
-import { UserTC } from "./user-graph"
+import { CloseContactTC } from "./close-contact-tc"
+import { NotificationTC } from "./notification-tc"
+import { UserTC } from "./user-tc"
 
 schemaComposer.Query.addFields({
   users: UserTC.getResolver("findMany"),

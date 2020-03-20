@@ -1,5 +1,5 @@
 import { composeWithMongoose } from "graphql-compose-mongoose"
-import { CloseContactTC } from "./close-contact-graph"
+import { CloseContactTC } from "./close-contact-tc"
 import { User } from "./user"
 
 export const UserTC = composeWithMongoose(User, {})

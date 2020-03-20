@@ -1,29 +1,39 @@
 /* eslint-disable no-unused-vars */
 import { schemaComposer } from "graphql-compose"
 import { NotificationTC } from "./notification-tc"
-import { UserTC } from "./user-tc"
-import { CloseContactTC } from "./close-contact-tc"
+import { UserTC, updateProfileResolver } from "./user-tc"
+import {
+  CloseContactTC,
+  findContactResolver,
+  makeContactResolver,
+  updateContactResolver,
+} from "./close-contact-tc"
 
 schemaComposer.Query.addFields({
-  me: {
-    type: UserTC.getTypeName(),
+  profile: {
+    type: UserTC,
     resolve: (_source, _args, context) => context.user,
   },
-  users: UserTC.getResolver("findMany"),
-  user: UserTC.getResolver("findOne"),
-  closeContacts: CloseContactTC.getResolver("findMany"),
-  closeContact: CloseContactTC.getResolver("findOne"),
-  notifications: NotificationTC.getResolver("findMany"),
-  notification: NotificationTC.getResolver("findOne"),
+  contacts: findContactResolver,
 })
 
 schemaComposer.Mutation.addFields({
-  userCreate: UserTC.getResolver("createOne"),
-  userUpdate: UserTC.getResolver("updateOne"),
-  closeContactCreate: CloseContactTC.getResolver("createOne"),
-  closeContactUpdate: CloseContactTC.getResolver("updateOne"),
-  notificationCreate: NotificationTC.getResolver("createOne"),
-  notificationUpdate: NotificationTC.getResolver("updateOne"),
+  profile: updateProfileResolver,
+  contact: updateContactResolver,
+  makeContact: makeContactResolver,
+  // scanContact
 })
-
+/**
+ *   notifications [Notification] {
+   //filter
+  }
+  
+  markInfect() // send noti to all user related
+  markCure() // send noti to all user related
+ */
 export default UserTC.schemaComposer.buildSchema()
+
+// data loader for cache
+// https://github.com/graphql-compose/graphql-compose-dataloader
+// pagination
+// https://github.com/graphql-compose/graphql-compose-connection

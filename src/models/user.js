@@ -176,3 +176,4 @@ UserSchema.methods.saveToken = function() {
 }
 
 export const User = mongoose.model("User", UserSchema)
+export const nonUpdateFields = ["hasAcceptedTerm", "facebookId", "email"]

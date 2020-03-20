@@ -13,8 +13,16 @@ const users = [
     email: "tester+3@covid.com",
     name: "Tester+3",
   },
+  {
+    email: "tester+4@covid.com",
+    name: "Tester+4",
+  },
+  {
+    email: "tester+5@covid.com",
+    name: "Tester+5",
+  },
 ]
 
 export default async function userSeeder() {
-  await User.create(users)
+  return User.create(users)
 }

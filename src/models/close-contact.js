@@ -21,7 +21,7 @@ const CloseContactSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "User",
     },
-    timestamps: { type: Date },
+    timestamps: { type: Date, default: Date.now },
     location: {
       type: PointSchema,
     },

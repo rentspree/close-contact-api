@@ -1,7 +1,7 @@
 import { Schema } from "mongoose"
 import { composeWithMongoose } from "graphql-compose-mongoose"
-import { schemaComposer } from "graphql-compose"
 import mongoose from "../connection"
+import { CloseContactTC } from "./close-contact"
 
 const UserSchema = new Schema(
   {
@@ -19,15 +19,28 @@ const UserSchema = new Schema(
 export const User = mongoose.model("User", UserSchema)
 
 export const UserTC = composeWithMongoose(User, {})
-UserTC.addResolver({
-  name: "findByFacebookId",
-  args: { facebookId: "String!" },
-  type: "User",
-  resolve: async ({ args: { facebookId } }) => {
-    const user = await User.findOne({ facebookId })
-    return user
-  },
+
+// UserTC.addResolver({
+//   name: "findByFacebookId",
+//   args: { facebookId: "String!" },
+//   type: "User",
+//   resolve: async ({ args: { facebookId } }) => {
+//     const user = await User.findOne({ facebookId })
+//     return user
+//   },
+// })
+
+UserTC.addRelation("closeContacts", {
+  resolver: () => CloseContactTC.getResolver("findByContactee"),
+  // prepareArgs: {
+  //   contacteeId: source => {
+  //     console.log(source)
+  //     return source.Id
+  //   },
+  // },
+  // projection: { userId: true },
 })
+
 // const schemaComposer = new SchemaComposer()
 
 // schemaComposer.Query.addFields({
@@ -50,5 +63,3 @@ UserTC.addResolver({
 //   userRemoveOne: UserTC.getResolver("removeOne"),
 //   userRemoveMany: UserTC.getResolver("removeMany"),
 // })
-
-export const UserSchemaComposer = schemaComposer

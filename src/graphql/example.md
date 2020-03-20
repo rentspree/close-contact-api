@@ -8,13 +8,29 @@ mutation {
 ```
 
 
+
+findAll user
 ```
 {
-  userOne(filter:{
-    facebookId:"1"
-  }) {
+  users  {
     facebookId
     email
+    name
+    status
+    hasAcceptedTerm
+    updatedAt
+    createdAt
+  }
+}
+```
+
+filter user
+```
+{
+  users (filter:{facebookId:"fb_1"}) {
+    facebookId
+    email
+    name
     status
     hasAcceptedTerm
     updatedAt

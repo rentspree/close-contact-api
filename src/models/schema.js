@@ -1,4 +1,6 @@
 import { schemaComposer } from "graphql-compose"
+import { CloseContactTC } from "./close-contact"
+import { NotificationTC } from "./notification"
 import { UserTC } from "./user"
 // Requests which read data put into Query
 
@@ -14,10 +16,17 @@ import { UserTC } from "./user"
 
 schemaComposer.Query.addFields({
   users: UserTC.getResolver("findMany"),
+  user: UserTC.getResolver("findOne"),
 })
 
 schemaComposer.Query.addFields({
-  user: UserTC.getResolver("findOne"),
+  closeContacts: CloseContactTC.getResolver("findMany"),
+  closeContact: CloseContactTC.getResolver("findOne"),
+})
+
+schemaComposer.Query.addFields({
+  notifications: NotificationTC.getResolver("findMany"),
+  notification: NotificationTC.getResolver("findOne"),
 })
 
 schemaComposer.Mutation.addFields({

@@ -14,11 +14,11 @@ const PointSchema = new Schema({
 
 const CloseContactSchema = new Schema(
   {
-    contactId: {
+    contact: {
       type: Schema.Types.ObjectId,
       ref: "User",
     },
-    contacteeId: {
+    contactee: {
       type: Schema.Types.ObjectId,
       ref: "User",
     },

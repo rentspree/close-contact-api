@@ -1,22 +1,26 @@
-import mongoose, { Schema } from "mongoose"
+import { Schema } from "mongoose"
+import mongoose from "../connection"
 
 const PointSchema = new Schema({
   type: {
     type: String,
     enum: ["Point"],
+    default: "Point",
+    required: true,
   },
   coordinates: {
     type: [Number],
+    required: true,
   },
 })
 
 const CloseContactSchema = new Schema(
   {
-    contactId: {
+    contact: {
       type: Schema.Types.ObjectId,
       ref: "User",
     },
-    contacteeId: {
+    contactee: {
       type: Schema.Types.ObjectId,
       ref: "User",
     },
@@ -29,10 +33,7 @@ const CloseContactSchema = new Schema(
     protection: { type: String },
   },
   {
-    timestamps: {
-      createdAt: "createdAt",
-      updatedAt: "updatedAt",
-    },
+    timestamps: true,
     toObject: {
       virtuals: true,
     },
@@ -42,4 +43,5 @@ const CloseContactSchema = new Schema(
     id: false,
   },
 )
+
 export const CloseContact = mongoose.model("CloseContact", CloseContactSchema)

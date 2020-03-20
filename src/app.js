@@ -1,5 +1,6 @@
 import "source-map-support/register"
-import rootSchema from "./models/schema"
+import rootSchema from "./graphql/schema"
+import { authorize } from "./middlewares/authorize-user"
 
 const createError = require("http-errors")
 const express = require("express")
@@ -27,11 +28,9 @@ app.use("/account", usersRouter)
 
 app.use(
   "/graphql",
+  authorize(),
   graphqlHTTP({
     schema: rootSchema,
-    // rootValue: {
-    //   user:
-    // },//will get passed as the root value to the executor
     graphiql: true,
   }),
 )
@@ -46,7 +45,6 @@ app.use(function(err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message
   res.locals.error = req.app.get("env") === "development" ? err : {}
-
   // render the error page
   res.status(err.status || 500)
   res.render("error")

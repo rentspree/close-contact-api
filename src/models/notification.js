@@ -2,18 +2,23 @@ import mongoose, { Schema } from "mongoose"
 
 const NotificationSchema = new Schema(
   {
-    userId: {
+    notifier: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+    actor: {
       type: Schema.Types.ObjectId,
       ref: "User",
     },
     timestamps: { type: Date, default: Date.now },
     title: String,
-    subject: String,
-    note: String,
+    description: String,
+    type: String,
+    read: { type: Date },
   },
   {
     timestamps: true,
   },
 )
 
-export const Notification = mongoose.model("CloseContact", NotificationSchema)
+export const Notification = mongoose.model("Notification", NotificationSchema)

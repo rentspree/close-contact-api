@@ -1,33 +1,22 @@
+import faker from "faker"
 import { User } from "../src/models/user"
 
-const users = [
-  {
-    facebookId: "fb_1",
-    email: "tester+1@covid.com",
-    name: "Tester+1",
-  },
-  {
-    facebookId: "fb_2",
-    email: "tester+2@covid.com",
-    name: "Tester+2",
-  },
-  {
-    facebookId: "fb_3",
-    email: "tester+3@covid.com",
-    name: "Tester+3",
-  },
-  {
-    facebookId: "fb_4",
-    email: "tester+4@covid.com",
-    name: "Tester+4",
-  },
-  {
-    facebookId: "fb_5",
-    email: "tester+5@covid.com",
-    name: "Tester+5",
-  },
-]
+const userCount = parseInt(process.argv.slice(2)[0], 10) || 5
+
+function getFakeUserData() {
+  return {
+    email: faker.internet.email(),
+    firstName: faker.name.firstName(),
+    lastName: faker.name.lastName(),
+    facebookId: `fb_${faker.random.uuid()}`,
+    profilePicture: faker.image.avatar(),
+  }
+}
 
 export default async function userSeeder() {
+  const users = []
+  for (let i = 0; i < userCount; i += 1) {
+    users.push(getFakeUserData())
+  }
   return User.create(users)
 }

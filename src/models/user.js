@@ -19,6 +19,15 @@ const UserSchema = new Schema(
 export const User = mongoose.model("User", UserSchema)
 
 export const UserTC = composeWithMongoose(User, {})
+UserTC.addResolver({
+  name: "findByFacebookId",
+  args: { facebookId: "String!" },
+  type: "User",
+  resolve: async ({ args: { facebookId } }) => {
+    const user = await User.findOne({ facebookId })
+    return user
+  },
+})
 // const schemaComposer = new SchemaComposer()
 
 // schemaComposer.Query.addFields({

@@ -6,9 +6,14 @@ schemaComposer.Query.addFields({
   users: {
     type: "[User]",
     resolve: async () => {
-      return await User.find()
+      const users = await User.find()
+      return users
     },
   },
+})
+
+schemaComposer.Query.addFields({
+  user: UserTC.getResolver("findByFacebookId"),
 })
 
 schemaComposer.Mutation.addFields({

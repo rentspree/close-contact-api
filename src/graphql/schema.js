@@ -1,5 +1,4 @@
 import { schemaComposer } from "graphql-compose"
-import { CloseContactTC } from "./close-contact-tc"
 import { NotificationTC } from "./notification-tc"
 import { UserTC } from "./user-tc"
 
@@ -14,9 +13,7 @@ schemaComposer.Query.addFields({
   // me: UserTC.getResolver("me", [authMiddleware]),
   me: {
     type: UserTC.getTypeName(),
-    resolve: (source, args, context, info) => {
-      return context.user
-    },
+    resolve: (_source, _args, context) => context.user,
   },
 })
 

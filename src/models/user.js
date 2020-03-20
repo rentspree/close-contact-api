@@ -19,26 +19,12 @@ const UserSchema = new Schema(
 export const User = mongoose.model("User", UserSchema)
 
 export const UserTC = composeWithMongoose(User, {})
+// 1) contact to ?
+// 2) who contact to me?
+// 3) count together
 
-// UserTC.addResolver({
-//   name: "findByFacebookId",
-//   args: { facebookId: "String!" },
-//   type: "User",
-//   resolve: async ({ args: { facebookId } }) => {
-//     const user = await User.findOne({ facebookId })
-//     return user
-//   },
-// })
-
-UserTC.addRelation("closeContacts", {
-  resolver: () => CloseContactTC.getResolver("findByContactee"),
-  prepareArgs: {
-    contacteeId: source => {
-      console.log("sourceJa", source)
-      return source._id
-    },
-  },
-  // projection: { _id: true },
+UserTC.addFields({
+  closeContacts: CloseContactTC.getResolver("findMany"),
 })
 
 // const schemaComposer = new SchemaComposer()

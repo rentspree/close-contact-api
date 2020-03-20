@@ -1,5 +1,5 @@
 import "source-map-support/register"
-import schema from "./models/user"
+import rootSchema from "./models/schema"
 
 const createError = require("http-errors")
 const express = require("express")
@@ -7,7 +7,6 @@ const path = require("path")
 const cookieParser = require("cookie-parser")
 const graphqlHTTP = require("express-graphql")
 const logger = require("morgan")
-const { buildSchema } = require("graphql")
 const indexRouter = require("./routes")
 const usersRouter = require("./routes/users")
 
@@ -26,23 +25,11 @@ app.use(express.static(path.join(__dirname, "public")))
 app.use("/", indexRouter)
 app.use("/users", usersRouter)
 
-// The root provides a resolver function for each API endpoint
-const root = {
-  hello: () => {
-    return "Hello world!"
-  },
-}
-const testSchema = buildSchema(`
-  type Query {
-    hello: String
-  }
-`)
-
 app.use(
   "/graphql",
   graphqlHTTP({
-    schema: testSchema,
-    rootValue: root,
+    schema: rootSchema,
+    // rootValue: ,will get passed as the root value to the executor
     graphiql: true,
   }),
 )

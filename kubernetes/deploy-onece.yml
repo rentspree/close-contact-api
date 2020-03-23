@@ -1,0 +1,86 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: covid-spree-mongo
+  namespace: covid-app
+spec:
+  serviceName: covid-spree-db
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: covid-spree-mongo
+        type: mongo
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: mongo
+          image: mongo:4.2
+          resources:
+            requests:
+              memory: "100Mi"
+              cpu: "100m"
+            limits:
+              memory: "500Mi"
+              cpu: "500m"
+          ports:
+            - containerPort: 27017
+          volumeMounts:
+            - name: covid-spree-db
+              mountPath: /data/db
+  volumeClaimTemplates:
+    - metadata:
+        name: covid-spree-db
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: fast
+        # NOTE: You can increase the storage size
+        resources:
+          requests:
+            storage: 60Gi
+  selector:
+    matchLabels:
+      app: covid-spree-mongo
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: covid-spree-mongo
+  namespace: covid-app
+  labels:
+    name: covid-spree-mongo
+spec:
+  ports:
+    - port: 27017
+      targetPort: 27017
+  type: NodePort
+  selector:
+    app: covid-spree-mongo
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: covid-spree-service
+  namespace: covid-app
+  labels:
+    name: covid-spree-service
+spec:
+  clusterIP: None
+  ports:
+    - port: 8000
+      targetPort: 8000
+  selector:
+    app: covid-spree-service
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: covid-spree-config
+  namespace: covid-app
+data:
+  HOST: "https://www.ladprao21.com"

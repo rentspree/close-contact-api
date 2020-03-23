@@ -1,5 +1,4 @@
 import mongoose, { Schema } from "mongoose"
-import { composeWithMongoose } from "graphql-compose-mongoose"
 
 const NotificationSchema = new Schema(
   {
@@ -23,5 +22,11 @@ const NotificationSchema = new Schema(
 )
 
 export const Notification = mongoose.model("Notification", NotificationSchema)
-
-export const NotificationTC = composeWithMongoose(Notification, {})
+export const nonUpdateFields = [
+  "actor",
+  "notifier",
+  "timestamp",
+  "type",
+  "title",
+  "description",
+]

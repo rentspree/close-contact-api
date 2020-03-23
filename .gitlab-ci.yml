@@ -1,13 +1,17 @@
 variables:
-  IMAGE: "gcr.io/rentspree-6789/rentspree-notification-service"
-  CLUSTER: "rentspree-dev-cluster --zone us-west1-a --project rentspree-6789"
-  MONGO_IMAGE: "mongo:3.4"
-  SERVICE_NAME: "notification"
-  
+  IMAGE: "gcr.io/rentspree-6789/devspree-covid-close-contact-api"
+  CLUSTER: "devspree --zone asia-southeast1-a --project rentspree-6789"
+  MONGO_IMAGE: "mongo:4.2"
+  SERVICE_NAME: "covid"
+
 include:
   - project: 'rentspree/utility/ci-template'
     file: '/template.yaml'
     ref: 'latest'
-  - project: 'rentspree/utility/ci-template'
-    file: '/test-service.yaml'
-    ref: 'latest'
+#  - project: 'rentspree/utility/ci-template'
+#    file: '/test-service.yaml'
+#    ref: 'latest'
+
+deploy_sandbox:
+  only:
+  - staging

@@ -12,8 +12,8 @@
     "migrate": "node ./node_modules/mongodb-migrate -runmm --config migration.config.js",
     "migrate:create": "node ./node_modules/mongodb-migrate -runmm create",
     "migrate:down": "node ./node_modules/mongodb-migrate -runmm --config migration.config.js down",
-    "start": "cross-env NODE_ENV=development nodemon --watch src --exec babel-node -- src/bin/www",
-    "start:prod": "cross-env NODE_ENV=production node build/bin/www",
+    "start": "cross-env NODE_ENV=development nodemon --watch src --exec babel-node -- src/bin/www.js",
+    "start:prod": "cross-env NODE_ENV=production node build/bin/www.js",
     "seed": "cross-env NODE_ENV=production babel-node seed/sample-seed.js",
     "seed:dev": "babel-node seed/seeder.js",
     "drop-db": "babel-node seed/drop-db.js"

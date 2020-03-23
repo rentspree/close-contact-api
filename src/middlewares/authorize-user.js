@@ -61,9 +61,14 @@ passport.use(
     },
   ),
 )
-
+const devUserMock = async (req, res, next) => {
+  req.user = await User.findOne()
+  next()
+}
 export const authorize = () => [
-  passport.authenticate("jwt", { session: false }),
+  process.env.NODE_ENV === "production"
+    ? passport.authenticate("jwt", { session: false })
+    : devUserMock,
 ]
 
 export function stripToken(req) {

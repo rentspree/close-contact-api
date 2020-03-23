@@ -2,31 +2,30 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: covid-spree-service
-  namespace: service
+  namespace: covid-app
 spec:
   replicas: 1
   template:
     metadata:
       labels:
         app: covid-spree-service
-        transport: seneca
         config_map: "true"
     spec:
       containers:
         - name: covid-spree-service
-          image: { { IMAGE } }
+          image: {{IMAGE}}
           resources:
             limits:
-              cpu: 100m
-              memory: 200Mi
+              cpu: 500m
+              memory: 500Mi
             requests:
-              cpu: 5m
-              memory: 50Mi
+              cpu: 100m
+              memory: 100Mi
           env:
             - name: NODE_ENV
               value: "production"
             - name: MONGO_DB
-              value: "covid-spree-mongo.database"
+              value: "covid-spree-mongo"
           envFrom:
             - configMapRef:
                 name: covid-spree-config
@@ -35,81 +34,17 @@ spec:
           volumeMounts:
             - name: jwt-auth-secret
               readOnly: true
-              mountPath: "/root/app/certs"
-            - name: gcloud-key-secret
+              mountPath: "/app/certs"
+            - name: gcloud-storage-key
               readOnly: true
-              mountPath: "/root/app/private-key"
+              mountPath: "/app/private-key"
+      volumes:
+        - name: jwt-auth-secret
+          secret:
+            secretName: jwt-auth-secret
+        - name: gcloud-storage-key
+          secret:
+            secretName: gcloud-storage-key
   selector:
     matchLabels:
       app: covid-spree-service
-
----
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  name: covid-spree-mongo
-  namespace: database
-spec:
-  serviceName: covid-spree-db
-  replicas: 1
-  template:
-    metadata:
-      labels:
-        app: covid-spree-mongo
-        type: mongo
-    spec:
-      terminationGracePeriodSeconds: 10
-      containers:
-        - name: mongo
-          image: mongo:3.4
-          resources:
-            requests:
-              memory: "50Mi"
-              cpu: "1m"
-            limits:
-              memory: "100Mi"
-              cpu: "50m"
-          ports:
-            - containerPort: 27017
-          volumeMounts:
-            - name: covid-spree-db
-              mountPath: /data/db
-      volumes:
-        - name: covid-spree-db
-          persistentVolumeClaim:
-            claimName: covid-spree-db
-  selector:
-    matchLabels:
-      app: covid-spree-mongo
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: covid-spree-mongo
-  namespace: database
-  labels:
-    name: covid-spree-mongo
-spec:
-  ports:
-    - port: 27017
-      targetPort: 27017
-  type: NodePort
-  selector:
-    app: covid-spree-mongo
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: covid-spree-service
-  namespace: service
-  labels:
-    name: covid-spree-service
-spec:
-  clusterIP: None
-  ports:
-    - port: 8000
-      targetPort: 8000
-  selector:
-    app: covid-spree-service

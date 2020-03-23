@@ -1,5 +1,8 @@
 import { schemaComposer } from "graphql-compose"
-import { findNotificationResolver } from "./notification-tc"
+import {
+  findNotificationResolver,
+  updateNotificationResolver,
+} from "./notification-tc"
 import { UserTC, updateProfileResolver, updateStatusResolver } from "./user-tc"
 import {
   CloseContactTC,
@@ -22,6 +25,7 @@ schemaComposer.Mutation.addFields({
   profile: updateProfileResolver,
   contact: updateContactResolver,
   makeContact: makeContactResolver,
+  notification: updateNotificationResolver, // for set read of any notification
   setInfectionStatus: updateStatusResolver, // send/unsend noti to all user related
 })
 /**

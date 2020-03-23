@@ -1,4 +1,5 @@
 import { Schema } from "mongoose"
+import moment from "moment"
 import mongoose from "../connection"
 
 export const CONTACT_TYPE = {
@@ -48,5 +49,46 @@ const CloseContactSchema = new Schema(
     id: false,
   },
 )
+
+/**
+ * This method will find the user who contacted with the patient in the given period ( default to 14 days)
+ */
+CloseContactSchema.statics.getPersonContactInPeriod = function(
+  patientId,
+  since,
+  until,
+) {
+  const potentialInfection = this.find({
+    ...((since || until) && {
+      timestamps: {
+        ...(since && { $gte: since }),
+        ...(until && { $lt: until }),
+      },
+    }),
+    $or: [
+      {
+        contactee: patientId,
+      },
+      {
+        contact: patientId,
+      },
+    ],
+  })
+
+  return potentialInfection
+}
+
+// OVERLOADED METHOD
+CloseContactSchema.statics.getPersonsInCloseContact = function(id) {
+  return this.getPersonContactInPeriod(id)
+}
+
+CloseContactSchema.statics.getContactForNotify = function(id) {
+  return this.getPersonContactInPeriod(
+    id,
+    moment().subtract(14, "days"),
+    moment(),
+  )
+}
 
 export const CloseContact = mongoose.model("CloseContact", CloseContactSchema)

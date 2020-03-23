@@ -8,12 +8,13 @@ export const NotificationTC = composeWithMongoose(Notification, {})
 export const NotificationInputIC = makeInput(NotificationTC, nonUpdateFields)
 
 NotificationTC.addFields({
+  // current notification sender to the current user
   user: {
     type: "User",
     resolve: async source => {
-      const { notifier } = source
+      const { actor } = source
       const userNotifier = await User.findOne({
-        _id: notifier,
+        _id: actor,
       })
       return userNotifier
     },
@@ -28,7 +29,7 @@ export const findNotificationResolver = NotificationTC.getResolver("findMany")
       ...restArgs,
       filter: {
         ...filter,
-        actor: context.user._id, // @REVIEW : actor or notifier means who got to noti
+        notifier: context.user._id,
       },
     }
     const res = await next({
@@ -39,16 +40,18 @@ export const findNotificationResolver = NotificationTC.getResolver("findMany")
     return res
   })
   .wrap(newResolver => {
-    newResolver.getArgITC("filter").removeField(["_id", "actor"]) // @REVIEW : actor or notifier means who got to noti
+    newResolver.getArgITC("filter").removeField(["_id", "notifier"])
     return newResolver
   })
 
-export const updateProfileResolver = NotificationTC.getResolver("updateOne")
+export const updateNotificationResolver = NotificationTC.getResolver(
+  "updateOne",
+)
   .wrapResolve(next => async ({ args, context, ...rest }) => {
     const newArgs = {
       record: args,
       filter: {
-        actor: context.user._id,
+        notifier: context.user._id,
       },
     }
     const res = await next({

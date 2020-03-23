@@ -53,12 +53,12 @@ const CloseContactSchema = new Schema(
 /**
  * This method will find the user who contacted with the patient in the given period ( default to 14 days)
  */
-CloseContactSchema.statics.getPersonContactInPeriod = async function(
+CloseContactSchema.statics.getPersonContactInPeriod = function(
   patientId,
   since,
   until,
 ) {
-  const potentialInfection = await this.find({
+  const potentialInfection = this.find({
     ...((since || until) && {
       timestamps: {
         ...(since && { $gte: since }),

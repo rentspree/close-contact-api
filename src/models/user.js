@@ -10,11 +10,21 @@ import mongoose from "../connection"
 import { setMillisecondToDate } from "../utils/convert-date"
 import { uploadImage, downloadProfilePicture } from "../utils/upload-images"
 
+export const STATUS_ENUM = {
+  INFECTED: "infected",
+  HEALTHY: "healthy",
+}
+
 const UserSchema = new Schema(
   {
     facebookId: String,
     email: String,
-    status: String,
+    status: {
+      type: String,
+      enum: Object.values(STATUS_ENUM),
+      default: STATUS_ENUM.HEALTHY,
+      required: true,
+    },
     hasAcceptedTerm: { type: Date, default: Date.now },
     profilePicture: String,
     firstName: String,
@@ -176,4 +186,9 @@ UserSchema.methods.saveToken = function() {
 }
 
 export const User = mongoose.model("User", UserSchema)
-export const nonUpdateFields = ["hasAcceptedTerm", "facebookId", "email"]
+export const nonUpdateFields = [
+  "hasAcceptedTerm",
+  "facebookId",
+  "email",
+  "status",
+]

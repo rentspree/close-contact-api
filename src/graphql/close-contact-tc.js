@@ -3,10 +3,11 @@ import { Types } from "mongoose"
 import { composeWithMongoose } from "graphql-compose-mongoose"
 import get from "lodash/get"
 import { schemaComposer } from "graphql-compose"
-import { CloseContact } from "../models/close-contact"
+import { CloseContact, CONTACT_TYPE } from "../models/close-contact"
 import { User } from "../models/user"
 import { makeInput } from "./helper"
 
+const { CONTACT, CONTACTEE } = CONTACT_TYPE
 const { ObjectId } = Types
 export const CloseContactTC = composeWithMongoose(CloseContact)
 // CloseContactTC.removeField(["contact", "contactee"])
@@ -14,8 +15,8 @@ export const CloseContactTC = composeWithMongoose(CloseContact)
 const contactTypeEnumTC = schemaComposer.createEnumTC({
   name: "ContactType",
   values: {
-    CONTACT: { value: 0 },
-    CONTACTEE: { value: 1 },
+    CONTACT: { value: CONTACT },
+    CONTACTEE: { value: CONTACTEE },
   },
 })
 
@@ -25,8 +26,8 @@ CloseContactTC.addFields({
     resolve: (source, args, context) => {
       return get(source, "contact", "").toString() ===
         get(context, "user._id", "").toString()
-        ? 0
-        : 1
+        ? CONTACT
+        : CONTACTEE
     },
     projection: { contact: true },
   },
@@ -41,8 +42,8 @@ export const makeContactResolver = CloseContactTC.getResolver("createOne")
     const newArgs = {
       record: {
         ...restArgs,
-        contactee: type ? context.user._id : target,
-        contact: type ? target : context.user._id,
+        contactee: type === CONTACT ? target : context.user._id,
+        contact: type === CONTACT ? context.user._id : target,
       },
     }
     const res = await next({
@@ -68,11 +69,11 @@ export const findContactResolver = CloseContactTC.getResolver("findMany")
       ...restArgs,
       filter: {
         ...restFilter,
-        ...(type === undefined && {
+        ...(!type && {
           $or: [{ contactee: context.user._id }, { contact: context.user._id }],
         }), // must be in current user context
-        ...(type === 0 && { contact: context.user._id }),
-        ...(type === 1 && { contactee: context.user._id }),
+        ...(type === CONTACT && { contact: context.user._id }),
+        ...(type === CONTACTEE && { contactee: context.user._id }),
       },
     }
     const res = await next({

@@ -22,6 +22,8 @@ RUN npm config set @rentspree:registry https://npm-proxy.fury.io/rentspree/
 
 RUN npm install --no-cache git
 RUN npm run build
+ADD src/public /app/build/public
+ADD src/views /app/build/views
 
 EXPOSE 3000
 CMD ["npm", "run", "start:prod"]

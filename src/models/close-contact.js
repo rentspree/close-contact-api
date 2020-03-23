@@ -1,6 +1,11 @@
 import { Schema } from "mongoose"
 import mongoose from "../connection"
 
+export const CONTACT_TYPE = {
+  CONTACT: "contact",
+  CONTACTEE: "contactee",
+}
+
 const PointSchema = new Schema({
   type: {
     type: String,

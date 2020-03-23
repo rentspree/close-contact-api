@@ -15,7 +15,7 @@ const NotificationSchema = new Schema(
     timestamps: { type: Date, default: Date.now },
     title: String,
     description: String,
-    type: String,
+    type: String, // TODO: make an enum type
     read: { type: Date },
   },
   {

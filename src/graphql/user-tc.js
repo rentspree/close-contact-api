@@ -1,6 +1,6 @@
 import { composeWithMongoose } from "graphql-compose-mongoose"
 import moment from "moment"
-import { User, nonUpdateFields, STATUS_ENUM } from "../models/user"
+import { User, nonUpdateFields } from "../models/user"
 import { makeInput } from "./helper"
 import { makeNotification } from "../service/notification-service"
 
@@ -57,7 +57,7 @@ UserTC.addResolver({
     status: statusEnumTC.getTypeNonNull(),
   },
   type: UserTC,
-  resolve: async ({ source, context, args }) => {
+  resolve: async ({ context, args }) => {
     const eventTimestamp = moment()
     const { status } = args
     const user = await User.findOne({ _id: context.user._id })

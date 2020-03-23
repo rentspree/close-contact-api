@@ -3,7 +3,7 @@ import {
   findNotificationResolver,
   updateNotificationResolver,
 } from "./notification-tc"
-import { UserTC, updateProfileResolver, updateStatusResolver } from "./user-tc"
+import { UserTC, updateProfileResolver } from "./user-tc"
 import {
   CloseContactTC,
   findContactResolver,
@@ -26,7 +26,7 @@ schemaComposer.Mutation.addFields({
   contact: updateContactResolver,
   makeContact: makeContactResolver,
   notification: updateNotificationResolver, // for set read of any notification
-  setInfectionStatus: updateStatusResolver, // send/unsend noti to all user related
+  setInfectionStatus: UserTC.getResolver("setInfectionStatus"), // send/unsend noti to all user related
 })
 /**
  *   notifications [Notification] {

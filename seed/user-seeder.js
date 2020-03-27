@@ -1,5 +1,5 @@
 import faker from "faker"
-import { User } from "../src/models/user"
+import { User, STATUS_ENUM } from "../src/models/user"
 
 const userCount = parseInt(process.argv.slice(2)[0], 10) || 5
 
@@ -10,6 +10,7 @@ function getFakeUserData() {
     lastName: faker.name.lastName(),
     facebookId: `fb_${faker.random.uuid()}`,
     profilePicture: faker.image.avatar(),
+    status: faker.random.arrayElement(Object.values(STATUS_ENUM)),
   }
 }
 

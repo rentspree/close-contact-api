@@ -3,7 +3,7 @@ import faker from "faker"
 import { Notification } from "../src/models/notification"
 import { randomBetween } from "./util-seeder"
 
-function getFakeNotificationData(actorId, notifierId) {
+function getFakeNotificationData(actorId, notifierId, actorStatus) {
   const timestampsDate = moment().subtract(randomBetween(60), "days")
   return {
     actor: actorId,
@@ -11,7 +11,7 @@ function getFakeNotificationData(actorId, notifierId) {
     timestamps: timestampsDate,
     title: faker.lorem.sentence(),
     description: faker.lorem.sentences(),
-    type: "infectedAlert",
+    type: actorStatus,
   }
 }
 
@@ -23,7 +23,9 @@ export default async function notificationSeeder(users) {
       const actor = users[actorIndex]
       const notifier = users[i]
       if (actorIndex !== i)
-        notificationData.push(getFakeNotificationData(actor._id, notifier._id))
+        notificationData.push(
+          getFakeNotificationData(actor._id, notifier._id, actor.status),
+        )
     }
   }
   return Notification.create(notificationData)

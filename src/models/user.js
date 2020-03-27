@@ -11,8 +11,10 @@ import { setMillisecondToDate } from "../utils/convert-date"
 import { uploadImage, downloadProfilePicture } from "../utils/upload-images"
 
 export const STATUS_ENUM = {
+  NORMAL: "normal",
+  RISK: "risk",
   INFECTED: "infected",
-  HEALTHY: "healthy",
+  HEALED: "healed",
 }
 
 const UserSchema = new Schema(
@@ -22,7 +24,7 @@ const UserSchema = new Schema(
     status: {
       type: String,
       enum: Object.values(STATUS_ENUM),
-      default: STATUS_ENUM.HEALTHY,
+      default: STATUS_ENUM.NORMAL,
       required: true,
     },
     hasAcceptedTerm: { type: Date, default: Date.now },

@@ -16,6 +16,7 @@ schemaComposer.Query.addFields({
     type: UserTC,
     resolve: (_source, _args, context) => context.user,
   },
+  user: UserTC.getResolver("findById"),
   contacts: findContactResolver,
   contactPersons: CloseContactTC.getResolver("contactPersons"),
   notifications: findNotificationResolver,

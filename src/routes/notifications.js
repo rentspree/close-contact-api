@@ -1,12 +1,27 @@
 import express from "express"
 import { Expo } from "expo-server-sdk"
 import { authorize } from "../middlewares/authorize-user"
+import { DeviceToken } from "../models/device-token"
 
 const expo = new Expo()
 
 const router = express.Router()
 
-router.use(authorize)
+router.use(authorize())
+
+router.put("/push-device", async (req, res, next) => {
+  try {
+    const { _id } = req.user || {}
+    const { deviceToken } = req.body || {}
+    const updatedDeviceTokens = await DeviceToken.pushDeviceToken(
+      _id,
+      deviceToken,
+    )
+    res.send(updatedDeviceTokens)
+  } catch (err) {
+    next(err)
+  }
+})
 
 // ref: https://github.com/expo/expo-server-sdk-node
 // TODO: integrated with makeNotification service or call POST api from front-end
@@ -73,3 +88,5 @@ router.post(async req => {
     console.error(err)
   }
 })
+
+module.exports = router

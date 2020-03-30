@@ -10,6 +10,7 @@ const graphqlHTTP = require("express-graphql")
 const logger = require("morgan")
 const indexRouter = require("./routes")
 const usersRouter = require("./routes/users")
+const notificationsRouter = require("./routes/notifications")
 
 const app = express()
 
@@ -25,6 +26,7 @@ app.use(express.static(path.join(__dirname, "public")))
 
 app.use("/", indexRouter)
 app.use("/account", usersRouter)
+app.use("/notifications", notificationsRouter)
 
 app.use(
   "/graphql",

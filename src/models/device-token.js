@@ -15,7 +15,8 @@ DeviceTokenSchema.statics.pushDeviceToken = async function(
   if (!token) {
     token = new this({ user: userId, deviceTokens: [deviceToken] })
   } else {
-    token.deviceToken = [...token.deviceTokens, deviceToken]
+    const uniqTokens = new Set([...token.deviceTokens, deviceToken])
+    token.deviceToken = [...uniqTokens]
   }
   return token.save()
 }

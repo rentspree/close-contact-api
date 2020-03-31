@@ -9,7 +9,7 @@ const router = express.Router()
 
 router.use(authorize())
 
-router.put("/push-device", async (req, res, next) => {
+router.post("/push-device", async (req, res, next) => {
   try {
     const { _id } = req.user || {}
     const { deviceToken } = req.body || {}

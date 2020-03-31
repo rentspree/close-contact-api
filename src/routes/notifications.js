@@ -12,10 +12,11 @@ router.use(authorize())
 router.post("/push-device", async (req, res, next) => {
   try {
     const { _id } = req.user || {}
-    const { deviceToken } = req.body || {}
+    const { deviceToken, type } = req.body || {}
     const updatedDeviceTokens = await DeviceToken.pushDeviceToken(
       _id,
       deviceToken,
+      type,
     )
     res.send(updatedDeviceTokens)
   } catch (err) {

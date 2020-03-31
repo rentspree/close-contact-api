@@ -39,7 +39,7 @@ export const makeNotification = async (actorId, status, notiTimeStamp) => {
       if (!sentUser[`${userToNotify}`]) {
         sentUser[`${userToNotify}`] = true // mark for distinct
         // TODO: query user's device to make notification
-        const deviceTokens = DeviceToken.find({ user: userToNotify }) || {}
+        const deviceTokens = await DeviceToken.find({ user: userToNotify })
         const noti = new Notification({
           // REVIEW select the first one or the last one ?
           notifier: ObjectId(userToNotify),

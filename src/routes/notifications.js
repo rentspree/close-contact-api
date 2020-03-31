@@ -24,12 +24,12 @@ router.post("/push-device", async (req, res, next) => {
   }
 })
 
-router.post("push", async (req, res, next) => {
+router.post("/push", async (req, res, next) => {
   try {
     const { actorId, userToNotify } = req.body
     const { firstName, lastName } = await User.findById(actorId)
     const actorName = [firstName, lastName].join(" ")
-    const deviceTokens = DeviceToken.find({ user: userToNotify })
+    const deviceTokens = await DeviceToken.find({ user: userToNotify })
     const notifications = await Promise.all(
       deviceTokens.map(({ token, type }) => {
         if (type === TYPE_ENUM.FCM) {

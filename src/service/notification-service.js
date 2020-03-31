@@ -16,7 +16,7 @@ const config = {
     ).toString()}`, // TODO: format msg
     type: "infection_alert", // TODO: make an enum type
   }),
-  [STATUS_ENUM.HEALTHY]: (actorId, location, timestamps) => ({
+  [STATUS_ENUM.HEALED]: (actorId, location, timestamps) => ({
     title: "HEALTHY ALERT",
     description: `User ${actorId} marked healthy , you meet each other at location ${location} on ${moment(
       timestamps,

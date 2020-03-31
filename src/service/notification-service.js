@@ -19,7 +19,7 @@ const notificationConfig = {
   }),
   [STATUS_ENUM.HEALED]: actorName => ({
     title: actorName,
-    description: "อัปเดตสถานะเป็น หายแล้้ว", // TODO: format msg
+    description: "อัปเดตสถานะเป็น หายแล้ว", // TODO: format msg
     type: STATUS_ENUM.HEALED, // TODO: make an enum type
   }),
 }

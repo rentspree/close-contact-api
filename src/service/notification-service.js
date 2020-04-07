@@ -55,7 +55,7 @@ export const makeNotification = async (actorId, status, notiTimeStamp) => {
                 config.fcm.endpoint,
                 {
                   to: token,
-                  data: {
+                  notification: {
                     title: noti.title,
                     body: noti.description,
                   },

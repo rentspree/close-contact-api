@@ -30,7 +30,7 @@
     "@rentspree/helper": "^1.0.32",
     "@rentspree/logger": "^1.0.0",
     "@rentspree/oauth2orize-facebook": "^1.0.6",
-    "apollo-server-express": "^2.11.0",
+    "apollo-server-express": "^2.14.2",
     "bluebird": "^3.7.2",
     "cookie-parser": "^1.4.5",
     "debug": "^4.1.1",
